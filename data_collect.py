@@ -1,3 +1,6 @@
+from dotenv.main import load_dotenv
+import os
+
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -7,6 +10,9 @@ import requests
 This file collects the raw shakespeare plays and the translated
 Shakespeare plays
 """ 
+
+load_dotenv('secrets.env')
+
 
 #Function defines a more realistic header for the scraper
 def define_request_headers():
@@ -37,11 +43,23 @@ def scrape_shakespeare_page(URL):
     #r = requests.get("https://httpbin.org/headers", headers=headers)
     #print(r.text)
 
-#function calls scrape_shakespeare_page, gets the HTML and parses it
+#function calls scrape_shakespeare_page, extracts the HTML
+#and parses HTML to obtain a link to each play which is stored and returned in a list
 def get_shakespeare_play_links():
-    URL = ""
+    URL = os.environ['TRANSLATIONS_HOMEPAGE']
+    DOMAIN_NAME = os.environ['DOMAIN_NAME']
     shakespeare_home_html = scrape_shakespeare_page(URL)
 
     soup = BeautifulSoup(shakespeare_home_html, 'html.parser')
+
+    link_to_play_acts = []
+
+    for play in soup.find_all("a", class_="translation hoverable"):
+
+        play_link = DOMAIN_NAME + play.get('href')
+        print(type(play_link))
+        link_to_play_acts.append(play_link)
+ 
+    print(link_to_play_acts)
 
     
