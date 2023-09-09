@@ -7,6 +7,7 @@ import pandas as pd
 import requests
 
 import random
+import time
 
 """
 This file collects the raw shakespeare plays and the translated
@@ -41,13 +42,12 @@ def scrape_shakespeare_page(URL):
     headers = define_request_headers()
     response = requests.get(URL, headers=headers)
 
-    
-
     if response.status_code == 200:
         shakespeare_html = response.content
     else:
         print("In data_collect.py, scrape_shakespeare_links, response status not 200")
-        exit()
+        print(URL)
+        # exit()
     
     return shakespeare_html
 
@@ -76,8 +76,42 @@ def get_shakespeare_play_links():
  
     return link_to_play_acts
 
+#Makes python pause execution for a random time between 2 and 10 seconds
+def random_sleep():
+    random_sleep_time = random.randint(2,10)
+    time.sleep(random_sleep_time)
+
 def scrape_acts_links():
     link_to_play_acts = get_shakespeare_play_links()
+    links_to_acts_content = []
+
+    time.sleep(2)
+    shakespeare_play_act_page_html = scrape_shakespeare_page(link_to_play_acts[0])
+    print("kadj;fsdkfsaf")
+    print(link_to_play_acts[0])
+    
+    soup = BeautifulSoup(shakespeare_play_act_page_html, 'html.parser')
+    acts_parent = soup.find("div", class_="table-of-contents")
+    print((acts_parent))
+    print(type(acts_parent))
+
+    for link in acts_parent.find_all("a"):
+        act_link = link.get('href')
+        print(act_link)
+
+
+
+    # for link in link_to_play_acts:
+    #     random_sleep()
+
+    #     shakespeare_play_act_page_html = scrape_shakespeare_page(link)
+        
+    #     soup = BeautifulSoup(shakespeare_play_act_page_html, 'html.parser')
+    #     acts_parent = soup.find("div", class_="table-of-contents")
+    #     act_link = acts_parent.get('href')
+
+
+
 
     #for each play,
         #get the links to the content of the act
