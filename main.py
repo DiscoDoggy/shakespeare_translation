@@ -1,3 +1,5 @@
+from data_collect import *
+
 def main():
     print("Hello world")
 
