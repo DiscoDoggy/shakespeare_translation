@@ -3,6 +3,7 @@ import os
 
 from selenium import webdriver
 from bs4 import BeautifulSoup
+import re
 import pandas as pd
 import requests
 
@@ -72,7 +73,7 @@ def get_shakespeare_play_links():
 
         play_link = DOMAIN_NAME + play.get('href')
         link_to_play_acts.append(play_link)
-        print(play_link)
+        # print(play_link)
  
     return link_to_play_acts
 
@@ -81,24 +82,43 @@ def random_sleep():
     random_sleep_time = random.randint(2,10)
     time.sleep(random_sleep_time)
 
+#This function scrapes the link that leads to the content for each act for each play
 def scrape_acts_links():
+    DOMAIN_NAME = os.environ['DOMAIN_NAME']
+
     link_to_play_acts = get_shakespeare_play_links()
     links_to_acts_content = []
 
-    time.sleep(2)
-    shakespeare_play_act_page_html = scrape_shakespeare_page(link_to_play_acts[0])
-    print("kadj;fsdkfsaf")
-    print(link_to_play_acts[0])
+    # time.sleep(2)
+    # shakespeare_play_act_page_html = scrape_shakespeare_page(link_to_play_acts)
     
-    soup = BeautifulSoup(shakespeare_play_act_page_html, 'html.parser')
-    acts_parent = soup.find("div", class_="table-of-contents")
-    print((acts_parent))
-    print(type(acts_parent))
+    # soup = BeautifulSoup(shakespeare_play_act_page_html, 'html.parser')
 
-    for link in acts_parent.find_all("a"):
-        act_link = link.get('href')
-        print(act_link)
+    # intro_container = soup.find("div", id="intro")
+    # table_of_contents = intro_container.find("div", class_="table-of-contents")
+    # table_of_contents_anchors = table_of_contents.find_all("a")
+    
+    # for act in table_of_contents_anchors:
+    #     act_content = DOMAIN_NAME + act.get('href')
+    #     print(act_content)
 
+    for link in link_to_play_acts:
+        random_sleep()
+
+        shakespeare_play_act_page_html = scrape_shakespeare_page(link)
+    
+        soup = BeautifulSoup(shakespeare_play_act_page_html, 'html.parser')
+
+        intro_container = soup.find("div", id="intro")
+        table_of_contents = intro_container.find("div", class_="table-of-contents")
+        table_of_contents_anchors = table_of_contents.find_all("a")
+        
+        for act in table_of_contents_anchors:
+            act_content_link = DOMAIN_NAME + act.get('href')
+            links_to_acts_content.append(act_content_link)
+            print(act_content_link)
+
+        # print(links_to_acts_content)
 
 
     # for link in link_to_play_acts:
