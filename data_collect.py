@@ -82,25 +82,13 @@ def random_sleep():
     random_sleep_time = random.randint(2,10)
     time.sleep(random_sleep_time)
 
-#This function scrapes the link that leads to the content for each act for each play
+#For each play and each act within each play, scrape the link to the content for that act
 def scrape_acts_links():
     DOMAIN_NAME = os.environ['DOMAIN_NAME']
+    content_links_file = open(r"act_content_links.txt", "w")
 
     link_to_play_acts = get_shakespeare_play_links()
     links_to_acts_content = []
-
-    # time.sleep(2)
-    # shakespeare_play_act_page_html = scrape_shakespeare_page(link_to_play_acts)
-    
-    # soup = BeautifulSoup(shakespeare_play_act_page_html, 'html.parser')
-
-    # intro_container = soup.find("div", id="intro")
-    # table_of_contents = intro_container.find("div", class_="table-of-contents")
-    # table_of_contents_anchors = table_of_contents.find_all("a")
-    
-    # for act in table_of_contents_anchors:
-    #     act_content = DOMAIN_NAME + act.get('href')
-    #     print(act_content)
 
     for link in link_to_play_acts:
         random_sleep()
@@ -111,30 +99,14 @@ def scrape_acts_links():
 
         intro_container = soup.find("div", id="intro")
         if intro_container != None:
-            
+
             table_of_contents = intro_container.find("div", class_="table-of-contents")
             table_of_contents_anchors = table_of_contents.find_all("a")
             
             for act in table_of_contents_anchors:
                 act_content_link = DOMAIN_NAME + act.get('href')
                 links_to_acts_content.append(act_content_link)
+                content_links_file.write(act_content_link + "\n")
                 print(act_content_link)
-
-        # print(links_to_acts_content)
-
-
-    # for link in link_to_play_acts:
-    #     random_sleep()
-
-    #     shakespeare_play_act_page_html = scrape_shakespeare_page(link)
         
-    #     soup = BeautifulSoup(shakespeare_play_act_page_html, 'html.parser')
-    #     acts_parent = soup.find("div", class_="table-of-contents")
-    #     act_link = acts_parent.get('href')
-
-
-
-
-    #for each play,
-        #get the links to the content of the act
-        # append to a list     
+    content_links_file.close()

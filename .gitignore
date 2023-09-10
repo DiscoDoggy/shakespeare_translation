@@ -3,3 +3,6 @@
 
 #ignore py cache
 *.pyc
+
+#Content Links
+act_content_links.txt
