@@ -1,5 +1,6 @@
 from dotenv.main import load_dotenv
 import os
+import csv
 
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -83,6 +84,7 @@ def random_sleep():
     time.sleep(random_sleep_time)
 
 #For each play and each act within each play, scrape the link to the content for that act
+#write the link to a file (avoids storing an array of size 1000 and varying very long strings)
 def scrape_acts_links():
     DOMAIN_NAME = os.environ['DOMAIN_NAME']
     content_links_file = open(r"act_content_links.txt", "w")
@@ -110,3 +112,9 @@ def scrape_acts_links():
                 print(act_content_link)
         
     content_links_file.close()
+
+    def scrape_text():
+        act_content_links_file = open('act_content_links.txt', 'r')
+
+        for line in act_content_links_file:
+            random_sleep()
