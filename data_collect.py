@@ -110,13 +110,15 @@ def scrape_acts_links():
         soup = BeautifulSoup(shakespeare_play_act_page_html, 'html.parser')
 
         intro_container = soup.find("div", id="intro")
-        table_of_contents = intro_container.find("div", class_="table-of-contents")
-        table_of_contents_anchors = table_of_contents.find_all("a")
-        
-        for act in table_of_contents_anchors:
-            act_content_link = DOMAIN_NAME + act.get('href')
-            links_to_acts_content.append(act_content_link)
-            print(act_content_link)
+        if intro_container != None:
+            
+            table_of_contents = intro_container.find("div", class_="table-of-contents")
+            table_of_contents_anchors = table_of_contents.find_all("a")
+            
+            for act in table_of_contents_anchors:
+                act_content_link = DOMAIN_NAME + act.get('href')
+                links_to_acts_content.append(act_content_link)
+                print(act_content_link)
 
         # print(links_to_acts_content)
 
