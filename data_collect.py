@@ -112,6 +112,10 @@ def scrape_acts_links():
         
     content_links_file.close()
 
+#Function opens the file in which contains all the links to textual content
+#queries that file to get the link then sends a get request to the link to get the textual content
+#With the textual content, it is parsed into untranslated and translated text
+#The text is then written to a CSV file
 def scrape_text():
     act_content_links_file = open('act_content_links.txt', 'r')
     translated_untranslated_csv = open('shakespeare_and_translation.csv', 'w')
@@ -140,7 +144,7 @@ def scrape_text():
             untranslated_column = row.find("div", class_="original-content")
             translated_column = row.find("div", class_= "modern-translation")
 
-            untranslated_column_text = untranslated_column.find("p", class_="speaker-text")
+            untranslated_column_text = untranslated_column.find("p", class_="speaker-text") #TODO FIXME
             translated_column_text = translated_column.find("p", class_="speaker-text")
             untranslated_column_text = untranslated_column_text.get_text()
             translated_column_text = translated_column_text.get_text()
