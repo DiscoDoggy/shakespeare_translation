@@ -138,7 +138,7 @@ def scrape_text():
             if untranslated_column == None or translated_column == None:
                 continue
 
-            untranslated_column_text = untranslated_column.find("p", class_="speaker-text") #TODO FIXME
+            untranslated_column_text = untranslated_column.find("p", class_="speaker-text") 
             translated_column_text = translated_column.find("p", class_="speaker-text")
 
             if untranslated_column_text == None or translated_column_text == None:
