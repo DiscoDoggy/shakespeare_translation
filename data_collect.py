@@ -52,7 +52,7 @@ def scrape_shakespeare_page(URL):
         shakespeare_html = response.content
     else:
         print("In data_collect.py, scrape_shakespeare_links, response status not 200")
-        print("ERROR CODE:", response.status_code)
+        print("ERROR CODE:", response.status_code, response.reason)
         print(URL)
         # exit()
     
@@ -126,14 +126,13 @@ def scrape_text():
     for line in act_content_links_file:
         random_sleep()
 
-        print("LINE", line)
-        print("LINE TYPE:", type(line))
-
         if count >= 1:
             break
         count += 1
 
-        shakespeare_content_html = scrape_shakespeare_page(line)
+        new_line_striped = line.rstrip()
+        shakespeare_content_html = scrape_shakespeare_page(new_line_striped)
+
         soup = BeautifulSoup(shakespeare_content_html, 'html.parser')
         list_of_comparison_rows = soup.find_all("div", class_="comparison-row")
 
