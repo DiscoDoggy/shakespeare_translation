@@ -1,6 +1,5 @@
 from dotenv.main import load_dotenv
 import os
-import csv
 
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -10,10 +9,15 @@ import requests
 
 import random
 import time
+import csv
+
 
 """
-This file collects the raw shakespeare plays and the translated
-Shakespeare plays
+This file requests from a specific website the untranslated text of all shakespeare works and the translated texts
+-First, For each play, grab the links that leads to a list of acts in each play and write it to a text file so we 
+do not need to store it in RAM
+-Then, for each link in the text file, open and collect all the character dialogue, translated and untranslated,
+and write that information to a CSV.
 """ 
 
 load_dotenv('secrets.env')
@@ -48,16 +52,11 @@ def scrape_shakespeare_page(URL):
         shakespeare_html = response.content
     else:
         print("In data_collect.py, scrape_shakespeare_links, response status not 200")
+        print("ERROR CODE:", response.status_code)
         print(URL)
         # exit()
     
     return shakespeare_html
-
-#For testing User-Agent
-# r = requests.get("https://httpbin.org/headers", headers=headers)
-# print(r.text)
-
-    
 
 #function calls scrape_shakespeare_page, extracts the HTML
 #and parses HTML to obtain a link to each plays' acts which is stored and returned in a list
@@ -113,8 +112,55 @@ def scrape_acts_links():
         
     content_links_file.close()
 
-    def scrape_text():
-        act_content_links_file = open('act_content_links.txt', 'r')
+def scrape_text():
+    act_content_links_file = open('act_content_links.txt', 'r')
+    translated_untranslated_csv = open('shakespeare_and_translation.csv', 'w')
 
-        for line in act_content_links_file:
-            random_sleep()
+    csv_writer = csv.writer(translated_untranslated_csv)
+    csv_writer.writerow(["Untranslated Shakespeare", "Translated Shakespeare"])
+
+    
+    #temp variable to test some amount of links
+    count = 0
+
+    for line in act_content_links_file:
+        random_sleep()
+
+        print("LINE", line)
+        print("LINE TYPE:", type(line))
+
+        if count >= 1:
+            break
+        count += 1
+
+        shakespeare_content_html = scrape_shakespeare_page(line)
+        soup = BeautifulSoup(shakespeare_content_html, 'html.parser')
+        list_of_comparison_rows = soup.find_all("div", class_="comparison-row")
+
+        for row in list_of_comparison_rows:
+            untranslated_column = row.find("div", class_="original-content")
+            translated_column = row.find("div", class_= "modern-translation")
+
+            untranslated_column_text = untranslated_column.find("p", class_="speaker-text")
+            translated_column_text = translated_column.find("p", class_="speaker-text")
+            untranslated_column_text = untranslated_column_text.get_text()
+            translated_column_text = translated_column_text.get_text()
+
+            csv_writer.writerow([untranslated_column_text, translated_column_text])
+    
+    act_content_links_file.close()
+    translated_untranslated_csv.close()
+
+
+
+
+
+
+
+#For testing User-Agent
+# r = requests.get("https://httpbin.org/headers", headers=headers)
+# print(r.text)
+
+#class comparison row consists of ORIGINAL PLAY (class is original-play)
+#and also consists of class = modern-translation
+#idea what if we get text from comparison row and stick it into an one each array
