@@ -1,10 +1,7 @@
 from dotenv.main import load_dotenv
 import os
 
-from selenium import webdriver
 from bs4 import BeautifulSoup
-import re
-import pandas as pd
 import requests
 
 import random
