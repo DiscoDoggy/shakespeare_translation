@@ -125,14 +125,14 @@ def scrape_text():
 
     
     #temp variable to test some amount of links
-    count = 0
+    # count = 0
 
     for line in act_content_links_file:
         random_sleep()
 
-        if count >= 1:
-            break
-        count += 1
+        # if count >= 5:
+        #     break
+        # count += 1
 
         new_line_striped = line.rstrip()
         shakespeare_content_html = scrape_shakespeare_page(new_line_striped)
@@ -142,10 +142,18 @@ def scrape_text():
 
         for row in list_of_comparison_rows:
             untranslated_column = row.find("div", class_="original-content")
-            translated_column = row.find("div", class_= "modern-translation")
+            translated_column = row.find("div", class_= "translation-content")
+
+            if untranslated_column == None or translated_column == None:
+                continue
 
             untranslated_column_text = untranslated_column.find("p", class_="speaker-text") #TODO FIXME
             translated_column_text = translated_column.find("p", class_="speaker-text")
+
+
+            if untranslated_column_text == None or translated_column_text == None:
+                continue
+
             untranslated_column_text = untranslated_column_text.get_text()
             translated_column_text = translated_column_text.get_text()
 
@@ -167,3 +175,6 @@ def scrape_text():
 #class comparison row consists of ORIGINAL PLAY (class is original-play)
 #and also consists of class = modern-translation
 #idea what if we get text from comparison row and stick it into an one each array
+
+#for csvs, if there is a comma in the source sentence, quotes will be added to the text sequence to differentiate
+#its commas from the csv commas
