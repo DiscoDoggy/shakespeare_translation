@@ -123,16 +123,10 @@ def scrape_text():
     csv_writer = csv.writer(translated_untranslated_csv)
     csv_writer.writerow(["Untranslated Shakespeare", "Translated Shakespeare"])
 
-    
-    #temp variable to test some amount of links
-    # count = 0
-
     for line in act_content_links_file:
         random_sleep()
 
-        # if count >= 5:
-        #     break
-        # count += 1
+        print("LINK:", line, "is there new line??")
 
         new_line_striped = line.rstrip()
         shakespeare_content_html = scrape_shakespeare_page(new_line_striped)
@@ -149,7 +143,6 @@ def scrape_text():
 
             untranslated_column_text = untranslated_column.find("p", class_="speaker-text") #TODO FIXME
             translated_column_text = translated_column.find("p", class_="speaker-text")
-
 
             if untranslated_column_text == None or translated_column_text == None:
                 continue
