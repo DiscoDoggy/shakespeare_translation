@@ -153,11 +153,6 @@ def scrape_text():
     translated_untranslated_csv.close()
 
 
-
-
-
-
-
 #For testing User-Agent
 # r = requests.get("https://httpbin.org/headers", headers=headers)
 # print(r.text)
@@ -168,3 +163,19 @@ def scrape_text():
 
 #for csvs, if there is a comma in the source sentence, quotes will be added to the text sequence to differentiate
 #its commas from the csv commas
+
+#experimentation with line to line scraping
+#did not work because the lines of the untranslated do not pair consistently with the translated lines
+
+            # untranslated_column_text = untranslated_column.find_all("span", class_ = "line-mapping")
+            # translated_column_text = translated_column.find_all("span", class_="line-mapping")
+
+            # print("\nuntranslated_column_text:", untranslated_column_text)
+            # print("translated_column_text:", untranslated_column_text)
+
+            # for (untranslated_text, translated_text) in zip(untranslated_column_text, translated_column_text):
+            #     if untranslated_text != None and translated_text != None:
+            #         untranslated_text_to_csv = untranslated_text.get_text()
+            #         translated_text_to_csv = translated_text.get_text()
+
+            #         csv_writer.writerow([untranslated_text_to_csv, translated_text_to_csv])
