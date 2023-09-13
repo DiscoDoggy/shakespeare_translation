@@ -8,4 +8,20 @@ a Shakespearean English translation.
 Here is an example! 
 | Modern English  | Shakespearean English  |
 |---|---|
-| ![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/12f4bd84-a4b3-4131-92a6-dcc34ffe160d)| ![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/efd1f957-8f67-4224-815a-6d8e06f10c24)|
+| ![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/12f4bd84-a4b3-4131-92a6-dcc34ffe160d)| ![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/efd1f957-8f67-4224-815a-6d8e06f10c24)| 
+
+### Applying the Model 
+In order to see the model in live action, I plan on implementing API calls to some celebrity accounts on
+X and Threads which will request the text of those posts, translate them to Shakespearean English, and repost them on a social media account
+made specifically for this project. 
+
+### Stages of Development 
+* Scrape Shakespearean English and Modern English translation text pairs
+* Perform data cleaning
+* Perform data preprocessing
+* Perform an Exploratory Data Analysis (EDA)
+* Create model
+* Train model
+* Test model
+* Make API calls and repost celebrity content in Shakespearean English
+
