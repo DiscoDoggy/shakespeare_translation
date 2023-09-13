@@ -25,3 +25,13 @@ made specifically for this project.
 * Test model
 * Make API calls and repost celebrity content in Shakespearean English
 
+## Development 
+### Scraping, Cleaning, and Preprocessing Data 
+The process of scraping, cleaning, and preprocessing data forms the basis of this project. How well the data is cleaned and preprocessed can impact
+eventual model performance. 
+
+My data collection, cleaning, and preprocessing steps forms an ETL (Extract, Transform, Load) data pipeline where: 
+* Shakespeare texts and its translations are collected (extraction) from websites
+* This data is then stored (transformed, unstructured --> structured) into a CSV file so I can store it without running the data collection script repeatedly
+* The data is then loaded into Pandas to be cleaned and processed
+
