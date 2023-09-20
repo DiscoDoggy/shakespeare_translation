@@ -4,6 +4,10 @@ import os
 from bs4 import BeautifulSoup
 import requests
 
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+
 import random
 import time
 import csv
@@ -31,7 +35,7 @@ def define_request_headers():
 
     headers = {
         "User-Agent": random.choice(user_agents),
-        "Accept-Encoding" : "gzip, deflate, br",
+        # "Accept-Encoding" : "gzip, deflate, br",
         "Accept-Language" : "en-US,en;q=0.5",
         "Connection" : "keep-alive",
         "Referer" : "https://www.google.com/",
@@ -113,6 +117,30 @@ def scrape_acts_links():
 #queries that file to get the link then sends a get request to the link to get the textual content
 #With the textual content, it is parsed into untranslated and translated text
 #The text is then written to a CSV file
+
+def scrape_shakespeare_dynamic(URL):
+    headers = define_request_headers()
+
+    chrome_options = Options()
+
+    for header, value in headers.items():
+        chrome_options.add_argument(f'--header={header}: {value}')
+
+    WEB_DRIVER_PATH = os.environ['WEB_DRIVER_PATH']
+    webdriver_service = Service(WEB_DRIVER_PATH)
+
+    driver = webdriver.Chrome(service = webdriver_service, options=chrome_options)
+    driver.get(URL)
+
+    driver.implicitly_wait(10)
+
+    html = driver.page_source
+    driver.quit()
+
+    return html
+
+    
+
 def scrape_text():
     act_content_links_file = open('act_content_links.txt', 'r')
     translated_untranslated_csv = open('shakespeare_and_translation.csv', 'w')
@@ -123,10 +151,8 @@ def scrape_text():
     for line in act_content_links_file:
         random_sleep()
 
-        print("LINK:", line, "is there new line??")
-
-        new_line_striped = line.rstrip()
-        shakespeare_content_html = scrape_shakespeare_page(new_line_striped)
+        url_new_line_striped = line.rstrip()
+        shakespeare_content_html = scrape_shakespeare_dynamic(url_new_line_striped)
 
         soup = BeautifulSoup(shakespeare_content_html, 'html.parser')
         list_of_comparison_rows = soup.find_all("div", class_="comparison-row")
@@ -144,10 +170,16 @@ def scrape_text():
             if untranslated_column_text == None or translated_column_text == None:
                 continue
 
-            untranslated_column_text = untranslated_column_text.get_text()
-            translated_column_text = translated_column_text.get_text()
+           
 
-            csv_writer.writerow([untranslated_column_text, translated_column_text])
+            # untranslated_texts_colors = untranslated_texts_colors.get("data-color")
+
+
+
+            # untranslated_column_text = untranslated_column_text.get_text()
+            # translated_column_text = translated_column_text.get_text()
+
+            # csv_writer.writerow([untranslated_column_text, translated_column_text])
     
     act_content_links_file.close()
     translated_untranslated_csv.close()
