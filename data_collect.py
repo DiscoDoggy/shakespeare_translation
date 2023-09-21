@@ -31,7 +31,8 @@ def define_request_headers():
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/117.0",\
         "Mozilla/5.0 (X11; CrOS x86_64 8172.45.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.64 Safari/537.36",\
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/601.3.9 (KHTML, like Gecko) Version/9.0.2 Safari/601.3.9",\
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246"]
+        "HTC: Mozilla/5.0 (Linux; Android 7.0; HTC 10 Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.83 Mobile Safari/537.36",\
+        "Google Nexus: Mozilla/5.0 (Linux; U; Android-4.0.3; en-us; Galaxy Nexus Build/IML74K) AppleWebKit/535.7 (KHTML, like Gecko) CrMo/16.0.912.75 Mobile Safari/535.7"]
 
     headers = {
         "User-Agent": random.choice(user_agents),
@@ -113,18 +114,18 @@ def scrape_acts_links():
         
     content_links_file.close()
 
-#Function opens the file in which contains all the links to textual content
-#queries that file to get the link then sends a get request to the link to get the textual content
-#With the textual content, it is parsed into untranslated and translated text
-#The text is then written to a CSV file
+#For more dynamic webpages, need to wait for JS to render updated HTML
+#This function 
 
 def scrape_shakespeare_dynamic(URL):
     headers = define_request_headers()
 
     chrome_options = Options()
 
+    chrome_options.add_argument('--headless')
     for header, value in headers.items():
         chrome_options.add_argument(f'--header={header}: {value}')
+    
 
     WEB_DRIVER_PATH = os.environ['WEB_DRIVER_PATH']
     webdriver_service = Service(WEB_DRIVER_PATH)
@@ -139,7 +140,10 @@ def scrape_shakespeare_dynamic(URL):
 
     return html
 
-    
+#Function opens the file which contains all the links to textual content
+#queries that file to get the link then sends a get request to the link to get the textual content
+#With the textual content, it is parsed into untranslated and translated text
+#The text is then written to a CSV file
 
 def scrape_text():
     act_content_links_file = open('act_content_links.txt', 'r')
@@ -169,6 +173,20 @@ def scrape_text():
 
             if untranslated_column_text == None or translated_column_text == None:
                 continue
+
+            untranslated_dc_span = untranslated_column_text.find_all("span", class_="line-mapping")
+            translated_dc_span = translated_column_text.find_all("span", class_ = "line-mapping")
+            print("untranslated_dc_span:", untranslated_dc_span)
+            print("translated_dc_span:", translated_dc_span)
+
+            untranslated_data_color_list = [int(span.get('data-color')) for span in untranslated_dc_span if span != None]
+            translated_data_color_list = [int(span.get('data-color')) for span in translated_dc_span if span != None]
+
+            print("untranslated data color codes:", untranslated_data_color_list)
+            print("translated data color codes:", translated_data_color_list, '\n')
+
+
+
 
            
 
