@@ -123,6 +123,9 @@ def scrape_shakespeare_dynamic(URL):
     chrome_options = Options()
 
     chrome_options.add_argument('--headless')
+    chrome_options.add_argument("--disable-blink-features=AutomationControlled") 
+    chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])  
+    chrome_options.add_experimental_option("useAutomationExtension", False)
     for header, value in headers.items():
         chrome_options.add_argument(f'--header={header}: {value}')
     
@@ -131,6 +134,10 @@ def scrape_shakespeare_dynamic(URL):
     webdriver_service = Service(WEB_DRIVER_PATH)
 
     driver = webdriver.Chrome(service = webdriver_service, options=chrome_options)
+
+    # Changing the property of the navigator value for webdriver to undefined 
+    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+     
     driver.get(URL)
 
     driver.implicitly_wait(10)
