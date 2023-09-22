@@ -153,31 +153,36 @@ def text_list_preprocess():
 
     color_code_words_tuple = zip(color_codes, words)
     color_code_words_tuple = tuple(color_code_words_tuple)
+    print("Code words tuple:", color_code_words_tuple)
 
     prev_num = None
     processed_words = []
     process_string = ""
 
-    for code, words in color_code_words_tuple:
-        
+    for i, code_str_tuple in enumerate(color_code_words_tuple):
+        color_code = code_str_tuple[0]
+        words = code_str_tuple[1]
+
         if prev_num == None: 
             process_string += words
-            prev_num = code
+            prev_num = color_code
 
-            #FIXME Handle case when only one color code/text ie nothing to append
+            if i == len(color_code_words_tuple) - 1:
+                processed_words.append(process_string)
 
-        elif prev_num != code:
+        elif prev_num != color_code:
             processed_words.append(process_string)
 
             process_string = ""
             process_string += words
-            prev_num = code
+            prev_num = color_code
         
-        elif prev_num == code:
-            process_string += words
-            prev_num = code
+        elif prev_num == color_code:
+            process_string = process_string + " " + words
+            prev_num = color_code
 
-            #FIXME what if at last index and theyre the same i dont append need ot check for last index
+            if i == len(color_code_words_tuple) - 1:
+                processed_words.append(process_string)
 
     print(processed_words)
 
