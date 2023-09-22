@@ -122,7 +122,7 @@ def scrape_shakespeare_dynamic(URL):
 
     chrome_options = Options()
 
-    chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--headless')
     chrome_options.add_argument("--disable-blink-features=AutomationControlled") 
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])  
     chrome_options.add_experimental_option("useAutomationExtension", False)
@@ -137,7 +137,7 @@ def scrape_shakespeare_dynamic(URL):
 
     # Changing the property of the navigator value for webdriver to undefined 
     driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-     
+
     driver.get(URL)
 
     driver.implicitly_wait(10)
@@ -146,6 +146,40 @@ def scrape_shakespeare_dynamic(URL):
     driver.quit()
 
     return html
+
+def text_list_preprocess():
+    words = ["He was excellend indeed madam", "the king very", "lately spoke of him again", "he", "was skillful enough", "against mortality"]
+    color_codes = [1,2,2,3,3,3]
+
+    color_code_words_tuple = zip(color_codes, words)
+    color_code_words_tuple = tuple(color_code_words_tuple)
+
+    prev_num = None
+    processed_words = []
+    process_string = ""
+
+    for code, words in color_code_words_tuple:
+        
+        if prev_num == None: 
+            process_string += words
+            prev_num = code
+
+            #FIXME Handle case when only one color code/text ie nothing to append
+
+        elif prev_num != code:
+            processed_words.append(process_string)
+
+            process_string = ""
+            process_string += words
+            prev_num = code
+        
+        elif prev_num == code:
+            process_string += words
+            prev_num = code
+
+            #FIXME what if at last index and theyre the same i dont append need ot check for last index
+
+    print(processed_words)
 
 #Function opens the file which contains all the links to textual content
 #queries that file to get the link then sends a get request to the link to get the textual content
