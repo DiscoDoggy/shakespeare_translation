@@ -1,5 +1,12 @@
 # Modern English to Shakespearean English 
 
+# Tech Stack! 
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Selenium](https://img.shields.io/badge/-selenium-%43B02A?style=for-the-badge&logo=selenium&logoColor=white)
+[![beautiful-soup-shield][beautifulsoup-shield]][beautifulsoup-url]
+
+
+
 ## Introduction 
 The goal of this repository is to document an end to end deep learning project involving machine translation. The end goal
 is for a user to be able to input modernized English language text to a deep learning model and have the model output
@@ -34,4 +41,8 @@ My data collection, cleaning, and preprocessing steps forms an ETL (Extract, Tra
 * Shakespeare texts and its translations are collected (extraction) from websites
 * This data is then stored (transformed, unstructured --> structured) into a CSV file so I can store it without running the data collection script repeatedly
 * The data is then loaded into Pandas to be cleaned and processed
+
+
+[beautifulsoup-shield]: https://img.shields.io/badge/-BEAUTIFULSOUP-blue?style=for-the-badge
+[beautifulsoup-url]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
 
