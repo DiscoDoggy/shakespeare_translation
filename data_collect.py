@@ -147,11 +147,8 @@ def scrape_shakespeare_dynamic(URL):
 
     return html
 
-def text_list_preprocess():
-    words = ["He was excellend indeed madam", "the king very", "lately spoke of him again", "he", "was skillful enough", "against mortality"]
-    color_codes = [1,2,2,3,3,3]
-
-    color_code_words_tuple = zip(color_codes, words)
+def text_list_preprocess(color_codes, text_lines):
+    color_code_words_tuple = zip(color_codes, text_lines)
     color_code_words_tuple = tuple(color_code_words_tuple)
     print("Code words tuple:", color_code_words_tuple)
 
@@ -167,9 +164,6 @@ def text_list_preprocess():
             process_string += words
             prev_num = color_code
 
-            if i == len(color_code_words_tuple) - 1:
-                processed_words.append(process_string)
-
         elif prev_num != color_code:
             processed_words.append(process_string)
 
@@ -181,10 +175,11 @@ def text_list_preprocess():
             process_string = process_string + " " + words
             prev_num = color_code
 
-            if i == len(color_code_words_tuple) - 1:
-                processed_words.append(process_string)
 
-    print(processed_words)
+        if i == len(color_code_words_tuple) - 1:
+            processed_words.append(process_string)
+
+    return processed_words
 
 #Function opens the file which contains all the links to textual content
 #queries that file to get the link then sends a get request to the link to get the textual content
@@ -222,28 +217,37 @@ def scrape_text():
 
             untranslated_dc_span = untranslated_column_text.find_all("span", class_="line-mapping")
             translated_dc_span = translated_column_text.find_all("span", class_ = "line-mapping")
-            print("untranslated_dc_span:", untranslated_dc_span)
-            print("translated_dc_span:", translated_dc_span)
+            print("\nuntranslated_dc_span:", untranslated_dc_span)
+            print("translated_dc_span:", translated_dc_span, '\n')
 
             untranslated_data_color_list = [int(span.get('data-color')) for span in untranslated_dc_span if span != None]
             translated_data_color_list = [int(span.get('data-color')) for span in translated_dc_span if span != None]
 
+            untranslated_data_text = [text_line.get_text() for text_line in untranslated_dc_span if text_line != None]
+            translated_data_text = [text_line.get_text() for text_line in translated_dc_span if text_line != None]
+
             print("untranslated data color codes:", untranslated_data_color_list)
             print("translated data color codes:", translated_data_color_list, '\n')
 
+            print("Untranslated Text Line:", untranslated_data_text)
+            print("Translated Text Line:", translated_data_text)
 
+            processed_ut_data_text = text_list_preprocess(untranslated_data_color_list, untranslated_data_text)
+            processed_t_data_text = text_list_preprocess(translated_data_color_list, translated_data_text)
 
+            print("processed_ut_data_text:", processed_ut_data_text, '\n')
+            print("processed_t_data_text:", processed_t_data_text, '\n')
 
-           
+            print(len(processed_ut_data_text))
+            print(len(processed_t_data_text))
+            print('\n')
+            assert len(processed_ut_data_text) == len(processed_t_data_text)
 
-            # untranslated_texts_colors = untranslated_texts_colors.get("data-color")
+            processed_ut_t_pair = zip(processed_ut_data_text, processed_t_data_text)
 
+            for pair in processed_ut_t_pair:
+                csv_writer.writerow([pair[0], pair[1]])
 
-
-            # untranslated_column_text = untranslated_column_text.get_text()
-            # translated_column_text = translated_column_text.get_text()
-
-            # csv_writer.writerow([untranslated_column_text, translated_column_text])
     
     act_content_links_file.close()
     translated_untranslated_csv.close()
