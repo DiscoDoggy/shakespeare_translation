@@ -35,7 +35,7 @@ def define_request_headers():
         "Google Nexus: Mozilla/5.0 (Linux; U; Android-4.0.3; en-us; Galaxy Nexus Build/IML74K) AppleWebKit/535.7 (KHTML, like Gecko) CrMo/16.0.912.75 Mobile Safari/535.7"]
 
     headers = {
-        "User-Agent": random.choice(user_agents),
+        "user-agent": random.choice(user_agents),
         # "Accept-Encoding" : "gzip, deflate, br",
         "Accept-Language" : "en-US,en;q=0.5",
         "Connection" : "keep-alive",
@@ -122,17 +122,16 @@ def scrape_shakespeare_dynamic(URL):
 
     chrome_options = Options()
 
-    # chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--headless')
     chrome_options.add_argument("--disable-blink-features=AutomationControlled") 
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])  
     chrome_options.add_experimental_option("useAutomationExtension", False)
     for header, value in headers.items():
-        chrome_options.add_argument(f'--header={header}: {value}')
+        chrome_options.add_argument(f'{header}={value}')
     
 
     WEB_DRIVER_PATH = os.environ['WEB_DRIVER_PATH']
     webdriver_service = Service(WEB_DRIVER_PATH)
-
     driver = webdriver.Chrome(service = webdriver_service, options=chrome_options)
 
     # Changing the property of the navigator value for webdriver to undefined 
