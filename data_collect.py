@@ -241,7 +241,11 @@ def scrape_text():
             print(len(processed_ut_data_text))
             print(len(processed_t_data_text))
             print('\n')
-            assert len(processed_ut_data_text) == len(processed_t_data_text)
+
+
+            if len(processed_ut_data_text) != len(processed_t_data_text):
+                continue
+            # assert len(processed_ut_data_text) == len(processed_t_data_text)
 
             processed_ut_t_pair = zip(processed_ut_data_text, processed_t_data_text)
 
