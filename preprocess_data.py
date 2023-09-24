@@ -12,9 +12,11 @@ def clean_unk_char_ws(data):
     Parameters: Pandas Dataframe
     Returns: Cleaned Pandas Dataframe 
     """
-    data = data.map(lambda text : re.sub('�',"", str(text)))
+    data = data.map(lambda text : re.sub('�',"", str(text))) #eliminates unk char
 
-    data = data.map(lambda text : re.sub('   '," ", str(text)))
+    data = data.map(lambda text : re.sub('   '," ", str(text))) #eliminates triple space
+
+    data = data.map(lambda text : re.sub(r'\[(.*)\]|\)', "", str(text))) #eliminates text between and including brackets
 
     data = data.map(lambda text : str(text).lstrip())
     data = data.map(lambda text : str(text).rstrip())
@@ -22,11 +24,14 @@ def clean_unk_char_ws(data):
     return data
 
 df = pd.read_csv('shakespeare_and_translation_original_data.csv')
+print(df['Translated Shakespeare'][40334])
 df = clean_unk_char_ws(df)
 
-for i in range(20):
-    print('hi'+df['Translated Shakespeare'][i])
-# for char in df['Untranslated Shakespeare'][4]:
-#     print(ord(char))
+for i in range(len(df['Translated Shakespeare'])):
+
+    if '[' in df['Translated Shakespeare'][i]:
+        print('hi'+df['Translated Shakespeare'][i])
+        print(i)
+
 
 
