@@ -2,6 +2,7 @@ import pandas as pd
 import re
 from langdetect import detect_langs
 from langdetect import DetectorFactory
+import random
 
 #this function removes '�' from the dataset and replaces it with an empty string
 def clean_unk_char_ws(data):
@@ -29,7 +30,9 @@ def clean_unk_char_ws(data):
 
     data = remove_unclosed_symbs(data)
 
-    data = data.drop_duplicates()
+    data = data.drop_duplicates(subset=['Untranslated Shakespeare'])
+    data = data.drop_duplicates(subset=['Translated Shakespeare'])
+
 
     return data
     
@@ -92,6 +95,14 @@ def check_duplicate_rows(data):
     else:
         print(duplicates_items)
 
+def output_random_row(data, num_rows):
+    for i in range(num_rows):
+        rand_index = random.randint(0, len(data) - 1)
+
+        print(data.iloc[rand_index, 0])
+        print(data.iloc[rand_index, 1])        
+
+        print('\n')
 
 df = pd.read_csv('shakespeare_and_translation_original_data.csv')
 
@@ -99,6 +110,8 @@ df = clean_unk_char_ws(df)
 
 check_unclosed_symbs(df)
 check_duplicate_rows(df)
+
+output_random_row(df, 100)
 
 
 
