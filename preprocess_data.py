@@ -25,7 +25,9 @@ def clean_unk_char_ws(data):
     data = data.map(lambda text : str(text).rstrip())
 
     #eliminating French having sentences
-    data = remove_french(data)
+    #data = remove_french(data)
+
+    data = remove_unclosed_symbs(data)
 
     return data
     
@@ -33,7 +35,7 @@ def clean_unk_char_ws(data):
 def remove_french(data):
     eliminated_french = []
     DetectorFactory.seed = 0
-    for i in range(len(df)):
+    for i in range(len(data)):
 
         if re.search("[a-z]+", data.loc[i, "Untranslated Shakespeare"]):
             untranslated_phrase = data.loc[i, "Untranslated Shakespeare"]
@@ -50,15 +52,46 @@ def remove_french(data):
 
     return data
 
+def remove_unclosed_symbs(data):
+    for i in range(len(data)):
+        untranslated_cell = data.loc[i, "Untranslated Shakespeare"]
+        translated_cell = data.loc[i, "Translated Shakespeare"]
+
+        if ("(" in untranslated_cell) or ("(" in translated_cell) or ("[" in untranslated_cell) or ("[" in translated_cell):
+            print("Untranslated Cell:", untranslated_cell)
+            print("translated cell:", translated_cell)
+
+            data = data.drop(i)
+    
+    return data
+
+def check_unclosed_symbs(data):
+    for i in range(len(data)):
+
+        untranslated_cell = data.iloc[i, 0]
+        translated_cell = data.iloc[i, 1]
+        
+        if '[' in untranslated_cell:
+            print(untranslated_cell)
+            print('\n')
+        if '[' in translated_cell:
+            print(translated_cell)
+            print('\n')
+        if '(' in untranslated_cell:
+            print(untranslated_cell)
+            print('\n')
+        if '(' in translated_cell:
+            print(translated_cell)
+            print('\n')
+        
+
+
+
 df = pd.read_csv('shakespeare_and_translation_original_data.csv')
 print(df['Translated Shakespeare'][40334])
 df = clean_unk_char_ws(df)
+check_unclosed_symbs(df)
 
-for i in range(len(df['Translated Shakespeare'])):
-
-    if '(' in df['Translated Shakespeare'][i]:
-        print('hi'+df['Translated Shakespeare'][i])
-        print(i)
 print(df.duplicated())
 
 
