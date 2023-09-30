@@ -29,6 +29,8 @@ def clean_unk_char_ws(data):
 
     data = remove_unclosed_symbs(data)
 
+    data = data.drop_duplicates()
+
     return data
     
 
@@ -58,9 +60,6 @@ def remove_unclosed_symbs(data):
         translated_cell = data.loc[i, "Translated Shakespeare"]
 
         if ("(" in untranslated_cell) or ("(" in translated_cell) or ("[" in untranslated_cell) or ("[" in translated_cell):
-            print("Untranslated Cell:", untranslated_cell)
-            print("translated cell:", translated_cell)
-
             data = data.drop(i)
     
     return data
@@ -84,15 +83,22 @@ def check_unclosed_symbs(data):
             print(translated_cell)
             print('\n')
         
+def check_duplicate_rows(data):
+    duplicates_rows = data.duplicated()
+    duplicates_items = data.loc[duplicates_rows]
 
+    if(len(duplicates_items) == 0):
+        print("NO DUPLICATES FOUND")
+    else:
+        print(duplicates_items)
 
 
 df = pd.read_csv('shakespeare_and_translation_original_data.csv')
-print(df['Translated Shakespeare'][40334])
-df = clean_unk_char_ws(df)
-check_unclosed_symbs(df)
 
-print(df.duplicated())
+df = clean_unk_char_ws(df)
+
+check_unclosed_symbs(df)
+check_duplicate_rows(df)
 
 
 
