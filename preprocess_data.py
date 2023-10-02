@@ -3,9 +3,10 @@ import re
 from langdetect import detect_langs
 from langdetect import DetectorFactory
 import random
+import csv
 
 #this function removes '�' from the dataset and replaces it with an empty string
-def clean_unk_char_ws(data):
+def clean_data(data):
     """
     * Purpose: replaces the � character with empty string and 
         * Gets rid of trailing and leading whitespace
@@ -15,9 +16,10 @@ def clean_unk_char_ws(data):
     Parameters: Pandas Dataframe
     Returns: Clean Pandas Dataframe 
     """
-    data = data.map(lambda text : re.sub('�',"", str(text))) #eliminates unk char
+    data = data.map(lambda text : re.sub('�'," ", str(text))) #eliminates unk char
 
     data = data.map(lambda text : re.sub('   '," ", str(text))) #eliminates triple space
+    data = data.map(lambda text : re.sub('  '," ", str(text))) #eliminates double space
 
     data = data.map(lambda text : re.sub(r'\((.*)\)', "", str(text))) #eliminates text between and including parenthesis
     data = data.map(lambda text : re.sub(r'\[(.*)\]|\)', "", str(text))) #eliminates text between and including brackets
@@ -25,8 +27,6 @@ def clean_unk_char_ws(data):
     data = data.map(lambda text : str(text).lstrip())
     data = data.map(lambda text : str(text).rstrip())
 
-    #eliminating French having sentences
-    #data = remove_french(data)
 
     data = remove_unclosed_symbs(data)
 
@@ -62,7 +62,7 @@ def remove_unclosed_symbs(data):
         untranslated_cell = data.loc[i, "Untranslated Shakespeare"]
         translated_cell = data.loc[i, "Translated Shakespeare"]
 
-        if ("(" in untranslated_cell) or ("(" in translated_cell) or ("[" in untranslated_cell) or ("[" in translated_cell):
+        if ("(" in untranslated_cell) or (")" in translated_cell) or ("[" in untranslated_cell) or ("]" in translated_cell):
             data = data.drop(i)
     
     return data
@@ -76,13 +76,13 @@ def check_unclosed_symbs(data):
         if '[' in untranslated_cell:
             print(untranslated_cell)
             print('\n')
-        if '[' in translated_cell:
+        if ']' in translated_cell:
             print(translated_cell)
             print('\n')
         if '(' in untranslated_cell:
             print(untranslated_cell)
             print('\n')
-        if '(' in translated_cell:
+        if ')' in translated_cell:
             print(translated_cell)
             print('\n')
         
@@ -104,14 +104,40 @@ def output_random_row(data, num_rows):
 
         print('\n')
 
-df = pd.read_csv('shakespeare_and_translation_original_data.csv')
+def write_cleaned_data(data):
 
-df = clean_unk_char_ws(df)
+    clean_csv = open('cleaned_data.csv')
+    
+    fout = csv.writer(clean_csv)
+    fout.writerow(['Input', 'Labels'])
 
-check_unclosed_symbs(df)
-check_duplicate_rows(df)
+    #shakespeare is label, mod. eng. is input
+    for i in range(len(data)):
+        fout.writerow([data.iloc[i, 1], data.iloc[i,0]])
 
-output_random_row(df, 100)
+def clean_data_main():
+    df = pd.read_csv('shakespeare_and_translation_original_data.csv')
+    df = clean_data(df)
 
+    check_unclosed_symbs(df)
+    check_duplicate_rows(df)
 
+    write_cleaned_data(df)
+
+    output_random_row(df, 100)
+
+"""
+* Preprocessing 
+    * Replace non-breaking space with space, convert uppercase to lower case, 
+    * and insert space between words and punctuation marks
+
+    * word level tokenization/ can i use byte pair?
+    * append eos token to ends of sequences
+    * Punctuation is its own token
+    * Done to both source langauge (modern english) and target language (shakespearean)
+
+    *Build two vocabularies: source and target
+        *Giant vocabulary
+            * Solution is to treat infrequent tokens that appear less than twice as unk
+"""
 
