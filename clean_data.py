@@ -16,7 +16,7 @@ def clean_data(data):
     Returns: Clean Pandas Dataframe 
     """
     data = data.map(lambda text : re.sub('�'," ", str(text))) #eliminates unk char
-
+#TODO: MAKE LOWERCASE: INSERT SPACE BEFORE AND AFTER PUNCTUATION
     data = data.map(lambda text : re.sub('   '," ", str(text))) #eliminates triple space
     data = data.map(lambda text : re.sub('  '," ", str(text))) #eliminates double space
 
@@ -34,6 +34,22 @@ def clean_data(data):
 
 
     return data
+
+def to_lower_and_space_punc(data):
+    punc_pattern = r'(\'|\.|,|\?|!|:|;|")'
+
+    for i in range(len(data)):
+        untranslated =  data.iloc[i, 0]
+        translated = data.iloc[i, 1]
+
+        untranslated = untranslated.lower()
+        translated = translated.lower()
+
+        untranslated = re.sub(punc_pattern, r" \1 ", untranslated)
+        translated = re.sub(punc_pattern, r" \1 ", translated)
+
+        print(untranslated)
+        print(translated)                
     
 
 def remove_french(data):
@@ -45,9 +61,6 @@ def remove_french(data):
     Returns: Dataframe
 
     """
-
-
-
     eliminated_french = []
     DetectorFactory.seed = 0
     for i in range(len(data)):
@@ -158,11 +171,15 @@ def clean_data_main():
     check_unclosed_symbs(df)
     check_duplicate_rows(df)
 
-    write_cleaned_data(df)
+    to_lower_and_space_punc(df)
 
-    return df
 
+    # write_cleaned_data(df)
     # output_random_row(df, 100)
+
+clean_data_main()
+
+    
 
 """
 * Preprocessing 
