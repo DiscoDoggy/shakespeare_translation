@@ -5,7 +5,6 @@ from langdetect import DetectorFactory
 import random
 import csv
 
-#this function removes '�' from the dataset and replaces it with an empty string
 def clean_data(data):
     """
     * Purpose: replaces the � character with empty string and 
@@ -38,6 +37,17 @@ def clean_data(data):
     
 
 def remove_french(data):
+    """
+    * Purpose: Shakespeare writes in French sometimes. Removes rows with French text from data frame
+        ! Very slow, has to check each word in a string to evaluate if the line contains French
+
+    Parameters: Dataframe
+    Returns: Dataframe
+
+    """
+
+
+
     eliminated_french = []
     DetectorFactory.seed = 0
     for i in range(len(data)):
@@ -58,6 +68,13 @@ def remove_french(data):
     return data
 
 def remove_unclosed_symbs(data):
+    """
+    * Purpose: Regular expressions sometimes do not remove all sequences with unclosed parenthesis and brackets
+    * This function removes unclosed and dangling closing parenthesis and brackets
+    
+    Parameters: Dataframe
+    Returns: Dataframe
+    """
     for i in range(len(data)):
         untranslated_cell = data.loc[i, "Untranslated Shakespeare"]
         translated_cell = data.loc[i, "Translated Shakespeare"]
@@ -68,6 +85,12 @@ def remove_unclosed_symbs(data):
     return data
 
 def check_unclosed_symbs(data):
+    """
+    * Purpose: Verify that unmatched brackets and parenthesis have been dropped from dataset
+
+    Parameters: Dataframe
+    Returns: Nothing
+    """
     for i in range(len(data)):
 
         untranslated_cell = data.iloc[i, 0]
@@ -87,6 +110,12 @@ def check_unclosed_symbs(data):
             print('\n')
         
 def check_duplicate_rows(data):
+    """
+    * Purpose: Verifies that duplicates have been removed
+
+    Parameters: Dataframe
+    Returns: Nothing
+    """
     duplicates_rows = data.duplicated()
     duplicates_items = data.loc[duplicates_rows]
 
@@ -116,6 +145,12 @@ def write_cleaned_data(data):
         fout.writerow([data.iloc[i, 1], data.iloc[i,0]])
 
 def clean_data_main():
+    """
+    * Purpose: Driver for all of cleaning process
+
+    Parameters: None
+    Returns Dataframe
+    """
     df = pd.read_csv('shakespeare_and_translation_original_data.csv')
 
     df = clean_data(df)
@@ -124,6 +159,8 @@ def clean_data_main():
     check_duplicate_rows(df)
 
     write_cleaned_data(df)
+
+    return df
 
     # output_random_row(df, 100)
 
