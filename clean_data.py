@@ -16,7 +16,9 @@ def clean_data(data):
     Returns: Clean Pandas Dataframe 
     """
     data = data.map(lambda text : re.sub('�'," ", str(text))) #eliminates unk char
-#TODO: MAKE LOWERCASE: INSERT SPACE BEFORE AND AFTER PUNCTUATION
+
+    data = to_lower_and_space_punc(data)
+
     data = data.map(lambda text : re.sub('   '," ", str(text))) #eliminates triple space
     data = data.map(lambda text : re.sub('  '," ", str(text))) #eliminates double space
 
@@ -48,8 +50,10 @@ def to_lower_and_space_punc(data):
         untranslated = re.sub(punc_pattern, r" \1 ", untranslated)
         translated = re.sub(punc_pattern, r" \1 ", translated)
 
-        print(untranslated)
-        print(translated)                
+        data.iloc[i,0] = untranslated
+        data.iloc[i,1] = translated
+
+    return data               
     
 
 def remove_french(data):
@@ -148,7 +152,7 @@ def output_random_row(data, num_rows):
 
 def write_cleaned_data(data):
 
-    clean_csv = open('cleaned_data.csv')
+    clean_csv = open('cleaned_data.csv', 'w')
     
     fout = csv.writer(clean_csv)
     fout.writerow(['Input', 'Labels'])
@@ -156,6 +160,8 @@ def write_cleaned_data(data):
     #shakespeare is label, mod. eng. is input
     for i in range(len(data)):
         fout.writerow([data.iloc[i, 1], data.iloc[i,0]])
+
+    clean_csv.close()
 
 def clean_data_main():
     """
@@ -171,13 +177,13 @@ def clean_data_main():
     check_unclosed_symbs(df)
     check_duplicate_rows(df)
 
-    to_lower_and_space_punc(df)
-
+    write_cleaned_data(df)
 
     # write_cleaned_data(df)
     # output_random_row(df, 100)
 
 clean_data_main()
+
 
     
 
