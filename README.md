@@ -44,7 +44,7 @@ My data collection, cleaning, and preprocessing steps forms an ETL (Extract, Tra
 Because translated works are technically copywritten, I do not include any of the data files in this repository but will provide example images of the data transformation. 
 | Raw data sample  | Cleaned and preprocessed Data Sample  |
 |---|---|
-| ![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/8ced972a-9e59-4bb6-b72d-e1823dd2f15a)|![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/904e5fbd-c866-44f2-a3b5-cd6ca692aad7)| 
+|![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/bb152543-3f21-47c0-9ce5-3a5109f3cc96)|![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/3f74850a-aa89-49fb-afc2-4ef4ba759650)| 
 
 The cleaned data has been tokenized, and the unknown character has been removed. The extra comma in the cleaned data is the resul the CSV file placing a comma to separate columns. 
 
