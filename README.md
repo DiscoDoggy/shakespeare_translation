@@ -46,7 +46,11 @@ Because translated works are technically copywritten, I do not include any of th
 |---|---|
 | ![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/8ced972a-9e59-4bb6-b72d-e1823dd2f15a)|![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/904e5fbd-c866-44f2-a3b5-cd6ca692aad7)| 
 
-The cleaned data has been tokenized, and the unknown character has been removed. 
+The cleaned data has been tokenized, and the unknown character has been removed. The extra comma in the cleaned data is the resul the CSV file placing a comma to separate columns. 
+
+### [Exploratory Data Analysis](/shakespeare_translation_eda.ipynb) 
+Within the exploratory data analysis, I perform a term frequency analysis and synthesize statistics regarding the data itself such as how long untranslated and translated text sequences are. 
+The analysis can be found [here](/shakespeare_translation_eda.ipynb)
 
 [beautifulsoup-shield]: https://img.shields.io/badge/-BEAUTIFULSOUP-blue?style=for-the-badge
 [beautifulsoup-url]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
