@@ -41,8 +41,26 @@ My data collection, cleaning, and preprocessing steps forms an ETL (Extract, Tra
 * This data is then stored (transformed, unstructured --> structured) into a CSV file so I can store it without running the data collection script repeatedly
 * The data is then loaded into Pandas to be cleaned and processed
 
+### Scraping the Data 
+To scrape the data, I use a combination of Python's request library and Selenium. One of the main challenges when scraping was aligning the untranslated Shakespearean text segment to 
+the corresponding translated Shakespearean text segment. Matching by punctuation did not work because the punctuation in a pair of segments could be different. On the website that I scraped though, 
+each line of the untranslated text was color coded to a line in the translated text. This meant I could use the HTML/Javascript color codings to align my text sequences. Python's request library does not 
+wait for Javascript elements to load, so I used Selenium in this case. The requests library was used to scrape the lists of Shakespeare's plays and acts of those plays storing them in another CSV file which then 
+the Selenium scraper would use to enter those links and scrape the actual raw text. 
+
+### Cleaning and Preprocessing 
+For cleaning the data, I performed the following tasks:
+* Substituted the unknown character symbol for a space. If this created a double or more space, in future
+cleaning steps those extra spaces would be removed.
+* Shakespeare often uses brackets and parenthesis to indicate actions but this is unlikely to see in social media tweets so I remove text between parenthesis and brackets including the parenthsis and brackets.
+* I strip whitespace
+* Remove any text pairs that contain French
+
+For preprocessing the data, I tokenize the data where each word and each punctuation is its own token. I then append an 
+EOS (end of segment) token to the end of each text sample. To prepare the data for the model, I also pad text segments which are below 10 tokens and truncate those that are over 10 tokens such that the model can batach process multiple text segments at a time. 
+
 Because translated works are technically copywritten, I do not include any of the data files in this repository but will provide example images of the data transformation. 
-| Raw data sample  | Cleaned and preprocessed Data Sample  |
+| Raw data sample  | Cleaned Data Sample  |
 |---|---|
 |![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/bb152543-3f21-47c0-9ce5-3a5109f3cc96)|![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/3f74850a-aa89-49fb-afc2-4ef4ba759650)| 
 
