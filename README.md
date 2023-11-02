@@ -22,10 +22,10 @@ X and Threads which will request the text of those posts, translate them to Shak
 made specifically for this project. 
 
 ### Stages of Development 
-* Scrape Shakespearean English and Modern English translation text pairs
-* Perform data cleaning
-* Perform data preprocessing
-* Perform an Exploratory Data Analysis (EDA)
+* Scrape Shakespearean English and Modern English translation text pairs :white_check_mark:
+* Perform data cleaning :white_check_mark:
+* Perform data preprocessing :white_check_mark:
+* Perform an Exploratory Data Analysis (EDA) :white_check_mark:
 * Create model
 * Train model
 * Test model
@@ -41,6 +41,12 @@ My data collection, cleaning, and preprocessing steps forms an ETL (Extract, Tra
 * This data is then stored (transformed, unstructured --> structured) into a CSV file so I can store it without running the data collection script repeatedly
 * The data is then loaded into Pandas to be cleaned and processed
 
+Because translated works are technically copywritten, I do not include any of the data files in this repository but will provide example images of the data transformation. 
+| Raw data sample  | Cleaned and preprocessed Data Sample  |
+|---|---|
+| ![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/8ced972a-9e59-4bb6-b72d-e1823dd2f15a)|![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/904e5fbd-c866-44f2-a3b5-cd6ca692aad7)| 
+
+The cleaned data has been tokenized, and the unknown character has been removed. 
 
 [beautifulsoup-shield]: https://img.shields.io/badge/-BEAUTIFULSOUP-blue?style=for-the-badge
 [beautifulsoup-url]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
