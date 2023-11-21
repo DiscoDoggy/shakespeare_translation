@@ -1,7 +1,6 @@
-from data_collect import *
-
+from preprocess import *
 def main():
-    print("Hello world")
+    preprocess_main()
 
 if __name__ == "__main__":
     main()
