@@ -3,6 +3,7 @@ from nltk.tokenize import word_tokenize
 from nltk.lm import Vocabulary
 import torch
 from torchtext.vocab import build_vocab_from_iterator
+from sklearn.model_selection import train_test_split
 
 from collections import Counter
 from itertools import chain
@@ -17,12 +18,19 @@ def preprocess_main():
         print(target_tokens[i])
         print('\n')
 
+    #for 50,000 samples 5% (0.05) is about 2500 samples for the test set and validation set
+    #this  means 1250 for both the test set and validation set
+    X_train, X_test, y_train, y_test = train_test_split(input_tokens, target_tokens, test_size=0.05, shuffle=True)
+    X_test, X_valid, y_test, y_valid = train_test_split(X_test, y_test, test_size = 0.5)
 
-    input_vocab = create_vocab(input_tokens)
-    target_vocab = create_vocab(input_tokens)
+    input_vocab = create_vocab(X_train)
+    target_vocab = create_vocab(y_train)
 
-    # print(input_vocab[input_tokens[0]])
-    # print(target_vocab[target_tokens[0]])
+    print("X_Train[:10]", X_train[0])
+    print("y_train[:10]", y_train[0])
+
+    # pad_trunc_X_train = pad_and_truncate(X_train)
+    # pad_trunc_y_train = pad_and_truncate(y_train)
     
     return df
 
@@ -57,17 +65,23 @@ def create_vocab(dataset):
         for text in data_iter:
             yield text
     
-    vocab = build_vocab_from_iterator(yield_tokens(dataset), specials=["<unk>", "<pad>", "<eos>"])
+    vocab = build_vocab_from_iterator(yield_tokens(dataset), specials=["<unk>", "<pad>", "<bos>" "<eos>"])
     vocab.set_default_index(vocab["<unk>"])
     vocab.set_default_index(vocab["<pad>"])
     vocab.set_default_index(vocab["<eos>"])
 
     return vocab
 
-def pad_and_truncate():
+def pad_and_truncate(training_data):
     """
-    make it so it takes in one class of tokens
+
     """
-    pass
+    
+
+
+
+
+    
+
 
     
