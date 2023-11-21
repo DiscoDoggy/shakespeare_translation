@@ -12,11 +12,15 @@ def preprocess_main():
     df = pd.read_csv("cleaned_data.csv")
 
     input_tokens, target_tokens = tokenize(df)
+    input_tokens = append_bos_tokens(input_tokens)
+    target_tokens = append_bos_tokens(target_tokens)
 
-    for i in range(50):
+    for i in range(10):
         print(input_tokens[i])
         print(target_tokens[i])
         print('\n')
+
+
 
     #for 50,000 samples 5% (0.05) is about 2500 samples for the test set and validation set
     #this  means 1250 for both the test set and validation set
@@ -72,11 +76,26 @@ def create_vocab(dataset):
 
     return vocab
 
-def pad_and_truncate(training_data):
+def append_bos_tokens(dataset):
+    processed_dataset = []
+
+    for seq in dataset:
+        temp = ["<bos>"] + seq
+        processed_dataset.append(temp)
+    
+    return processed_dataset
+
+def pad_and_truncate(training_input, training_labels, max_steps=10):
     """
 
     """
     
+
+
+
+
+
+
 
 
 
