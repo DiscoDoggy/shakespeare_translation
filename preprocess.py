@@ -22,8 +22,8 @@ def preprocess_main():
 
 
 
-    #for 50,000 samples 5% (0.05) is about 2500 samples for the test set and validation set
-    #this  means 1250 for both the test set and validation set
+    #!for ~50,000 samples 5% (0.05) is about 2500 samples for the test set and validation set
+    #!this  means 1250 for both the test set and validation set
     X_train, X_test, y_train, y_test = train_test_split(input_tokens, target_tokens, test_size=0.05, shuffle=True)
 
     X_test = append_eos(X_test)
@@ -38,21 +38,6 @@ def preprocess_main():
     print(as_ints)
     as_str = input_vocab.lookup_tokens(as_ints)
     print(as_str)
-    
-
-    print("X_Train[:10]", X_train[0])
-    print("y_train[:10]", y_train[0])
-
-    pad_trunc_X_train = pad_and_truncate(X_train)
-    pad_trunc_y_train = pad_and_truncate(y_train)
-
-    pad_trunc_X_train = append_eos(pad_trunc_X_train)
-    pad_trunc_y_train = append_eos(pad_trunc_y_train)
-
-    print('\n')
-
-    for i in range(25):
-        print(pad_trunc_X_train[i])
 
     
     return df
@@ -132,3 +117,11 @@ def pad_and_truncate(training_input, max_steps=10):
         padded_truncated.append(temp)
     
     return padded_truncated
+
+def batch_str_to_int(batch:list[list[str]]):
+    as_int = []
+
+    for tokens in batch:
+        
+
+    
