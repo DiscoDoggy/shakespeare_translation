@@ -10,6 +10,8 @@ def preprocess_main():
     # *Only the training set should be included in vocabulary meaning that 
     # *Splitting of the data should occur earlier on 
     OUTPUT_FILE_PATH = 'cleaned_data_no_blanks.csv'
+    NUM_ROWS = 50670
+
 
     data_pipe = dp.iter.IterableWrapper([OUTPUT_FILE_PATH])
     data_pipe = dp.iter.FileOpener(data_pipe, mode='rb')
@@ -17,39 +19,56 @@ def preprocess_main():
 
     print_data_pipe_sample(data_pipe,10)
 
+    #split the data into validation and train
+
+    train_dp, valid_dp = data_pipe.random_split(total_length=NUM_ROWS, weights={"train_dp": 0.95, "valid_dp": 0.05}, seed=0)
+
     global mod_eng_vocab
     global old_eng_vocab
-    mod_eng_vocab = build_vocabulary(data_pipe, 0)
-    old_eng_vocab = build_vocabulary(data_pipe, 1)
+    mod_eng_vocab = build_vocabulary(train_dp, 0)
+    old_eng_vocab = build_vocabulary(valid_dp, 1)
 
     print(mod_eng_vocab.get_itos()[:9])
     print(old_eng_vocab.get_itos()[:9])
 
     print("\nTESTING TRANSFORMS:\n")
     for i in range(10):
-        print_transforms_sample(data_pipe, mod_eng_vocab, 0, i)
-        print_transforms_sample(data_pipe, old_eng_vocab, 1, i)
+        print_transforms_sample(train_dp, mod_eng_vocab, 0, i)
+        print_transforms_sample(train_dp, old_eng_vocab, 1, i)
         print('\n')
+        print_transforms_sample(valid_dp,mod_eng_vocab, 0, i)
+        print_transforms_sample(valid_dp, old_eng_vocab, 1,i)
 
-    data_pipe = data_pipe.map(apply_transforms)
+    train_dp = train_dp.map(apply_transforms)
+    valid_dp = valid_dp.map(apply_transforms)
     # temp = list(data_pipe)
     # print(temp[:10])
 
-    data_pipe = data_pipe.bucketbatch(
+    train_dp = train_dp.bucketbatch(
         batch_size=4, batch_num=5, bucket_num=1,
         use_in_batch_shuffle=False, sort_key = sort_bucket
     )
 
-    data_pipe = data_pipe.map(separate_src_tgt)
-    print(list(data_pipe)[1])
+    valid_dp = valid_dp.bucketbatch(
+        batch_size=4, batch_num=5, bucket_num=1,
+        use_in_batch_shuffle=False, sort_key = sort_bucket
+    )
 
-    data_pipe = data_pipe.map(apply_padding)
+    train_dp = train_dp.map(separate_src_tgt)
+    print(list(train_dp)[1])
+    valid_dp = valid_dp.map(separate_src_tgt)
+    print(list(valid_dp)[1])
+
+    train_dp = train_dp.map(apply_padding)
+    valid_dp = valid_dp.map(apply_padding)
 
     print('\n')
 
-    print_fully_processed_samples(data_pipe, mod_eng_vocab, old_eng_vocab, 5)
+    print_fully_processed_samples(train_dp, mod_eng_vocab, old_eng_vocab, 5)
+    print_fully_processed_samples(valid_dp, mod_eng_vocab, old_eng_vocab, 5)
 
-    return data_pipe, mod_eng_vocab, old_eng_vocab
+
+    return train_dp, valid_dp, mod_eng_vocab, old_eng_vocab
 
 def tokenize(txt_segment):
     segment = txt_segment
