@@ -1,5 +1,4 @@
 from nltk.tokenize import word_tokenize
-import torch
 import torchtext.transforms
 from torchtext.transforms import VocabTransform
 import torchdata.datapipes as dp
@@ -7,11 +6,14 @@ from torchdata.datapipes.iter import IterableWrapper
 from torchtext.vocab import build_vocab_from_iterator
 
 def preprocess_main():
+    #! FIXME : Validation, test set both included in the vocabulary
+    # *Only the training set should be included in vocabulary meaning that 
+    # *Splitting of the data should occur earlier on 
     OUTPUT_FILE_PATH = 'cleaned_data_no_blanks.csv'
 
     data_pipe = dp.iter.IterableWrapper([OUTPUT_FILE_PATH])
     data_pipe = dp.iter.FileOpener(data_pipe, mode='rb')
-    data_pipe = data_pipe.parse_csv(skip_lines=0, delimiter=',', as_tuple = True)
+    data_pipe = data_pipe.parse_csv(skip_lines=1, delimiter=',', as_tuple = True)
 
     print_data_pipe_sample(data_pipe,10)
 
@@ -46,6 +48,8 @@ def preprocess_main():
     print('\n')
 
     print_fully_processed_samples(data_pipe, mod_eng_vocab, old_eng_vocab, 5)
+
+    return data_pipe, mod_eng_vocab, old_eng_vocab
 
 def tokenize(txt_segment):
     segment = txt_segment
@@ -157,6 +161,3 @@ def print_fully_processed_samples(data_pipe, mod_eng_lex, old_eng_lex, num_sampl
             print(f"Source: {source}")
             print(f"Target: {target}\n")
         break
-
-
-preprocess_main()
