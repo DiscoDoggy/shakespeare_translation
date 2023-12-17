@@ -71,7 +71,49 @@ class Decoder(nn.Module):
         #prediction becomes batch size x hidden dim
         prediction = self.out(output.squeeze(0))
 
-class 
+class Seq2Seq(nn.Module):
+    def __init__(self, 
+                 encoder:nn.Module, 
+                 decoder:nn.Module, 
+                 device:torch.device):
+        super().__init.__()
+
+        #initalizing class variables
+        self.encoder = encoder
+        self.decoder = decoder
+        self.device = device
+
+        assert encoder.hid_dim == decoder.hid_dim, \
+            "Hidden dim of encoder and decoder need to be equal"
+        assert encoder.n_layers == decoder.n_layers, \
+            "Encoder and decoder need to maintain the same number of layers"
+    
+    def forward(self, src:Tensor, trg:Tensor, teacher_forcing_ratio: float = 0.75):
+        #src = [src sent len x batch size]
+        #trg = [trg sent len x batch size]
+
+        batch_size = trg.shape[1]
+        max_len = trg.shape[0]
+
+        trg_vocab_size = self.decoder.output_dim
+
+        #tensor storing decoder outputs
+        outputs = torch.zeros(max_len, batch_size, trg_vocab_size).to(self.device)
+
+        #last hidden state of encoder used as intial hidden state of deocder
+        hidden, cell = self.encoder(src)
+
+        #first input to the decoder is <sos>token
+        input = trg[0,:]
+
+        for i in range(1, max_len):
+            output, hidden, cell = self.decoder(input, hidden, cell)
+            outputs[i] = output
+            teacher_force = random.random() < teacher_forcing_ratio
+            top1 = output.max(1)[1]
+            input = (trg[i] if teacher_force else top1)
+
+        return outputs
         
 
 def baseline_model_main():
@@ -87,6 +129,8 @@ def baseline_model_main():
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(type(device))
+
+    #Training 
 
 
 
