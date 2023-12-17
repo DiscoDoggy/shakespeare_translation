@@ -20,7 +20,8 @@ def preprocess_main():
     print_data_pipe_sample(data_pipe,10)
 
     #split the data into validation and train
-
+    #!for ~50,000 samples 5% (0.05) is about 2500 samples for the test set and validation set
+    #!this  means 1250 for both the test set and validation set
     train_dp, valid_dp = data_pipe.random_split(total_length=NUM_ROWS, weights={"train_dp": 0.95, "valid_dp": 0.05}, seed=0)
 
     global mod_eng_vocab
