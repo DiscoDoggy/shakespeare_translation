@@ -27,7 +27,7 @@ def preprocess_main():
     global mod_eng_vocab
     global old_eng_vocab
     mod_eng_vocab = build_vocabulary(train_dp, 0)
-    old_eng_vocab = build_vocabulary(valid_dp, 1)
+    old_eng_vocab = build_vocabulary(train_dp, 1)
 
     print(mod_eng_vocab.get_itos()[:9])
     print(old_eng_vocab.get_itos()[:9])

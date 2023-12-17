@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch import Tensor
 from typing import Tuple
+from torchtext.vocab import build_vocab_from_iterator
 
 import random
 import math
@@ -131,6 +132,42 @@ def baseline_model_main():
     print(type(device))
 
     #Training 
+    # __len__() → int[source]
+    INPUT_DIM = mod_eng_vocab.__len__()
+    OUTPUT_DIM = old_eng_vocab.__len__()
+    ENC_EMB_DIM = 256
+    DEC_EMB_DIM = 256
+    HID_DIM = 512
+    N_LAYERS = 2
+    ENC_DROPOUT = 0.5
+    DEC_DROPOUT = 0.5
+
+    enc = Encoder(INPUT_DIM, ENC_EMB_DIM, HID_DIM, N_LAYERS, ENC_DROPOUT)
+    dec = Decoder(OUTPUT_DIM, DEC_EMB_DIM, HID_DIM, N_LAYERS, DEC_DROPOUT)
+
+    model = Seq2Seq(enc,dec,device).to(device)
+    model.apply(init_weights)
+
+    print(f"The model has {count_parameters(model):,} trainable parameters")
+
+    optimizer = optim.Adam(model.parameters())
+
+    PAD_IDX = old_eng_vocab.lookup_indices(["<pad>"])[0]
+    criterion = nn.CrossEntropyLoss(ignore_index=PAD_IDX)
+
+
+def init_weights(m:nn.Module):
+    #intializes weights between -0.08 and 0.08 by sampling from a
+    #unifrom distribution
+    for name, param in m.named_parameters():
+        nn.init.uniform_(param.data, -0.08, 0.08)
+
+def count_parameters(model:nn.Module):
+    #calculates the number of trainable parameters by calculating the total 
+    #number of elemets with gradients in the model
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
 
 
 
