@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.optim as optim
 from torch import Tensor
 from typing import Tuple
-from torchtext.vocab import build_vocab_from_iterator
 
 import random
 import math
@@ -19,6 +18,7 @@ class Encoder(nn.Module):
                  n_layers:int, 
                  dropout:float):
         super().__init__()
+
         #intializing class variables 
         self.input_dim = input_dim
         self.emb_dim = emb_dim
@@ -32,6 +32,7 @@ class Encoder(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, src:Tensor) -> Tuple[Tensor,Tensor]:
+        print("Tensor shape:", src.size())
         embedded = self.dropout(self.embedding(src))
         outputs, (hidden,cell) = self.rnn(embedded)
         return hidden, cell
@@ -43,6 +44,7 @@ class Decoder(nn.Module):
                  n_layers:int, 
                  dropout:float):
         super().__init__()
+
         #intializing class variables
         self.emb_dim = emb_dim
         self.hid_dim = hid_dim
@@ -72,12 +74,14 @@ class Decoder(nn.Module):
         #prediction becomes batch size x hidden dim
         prediction = self.out(output.squeeze(0))
 
+        return prediction,hidden,cell
+
 class Seq2Seq(nn.Module):
     def __init__(self, 
                  encoder:nn.Module, 
                  decoder:nn.Module, 
                  device:torch.device):
-        super().__init.__()
+        super().__init__()
 
         #initalizing class variables
         self.encoder = encoder
@@ -121,7 +125,7 @@ def baseline_model_main():
     #because of the use of datapipe bucket batch, each element in the dataloader
     #are batches and not individual text sequences
     train_loader, valid_loader, mod_eng_vocab, old_eng_vocab = data_loader_main()
-
+    training_loader_iterator = iter(train_loader)
     #Code attempts to make Pytorch model training and execution reproducible by setting seed
     SEED = 1234
     random.seed(SEED)
@@ -148,6 +152,11 @@ def baseline_model_main():
     model = Seq2Seq(enc,dec,device).to(device)
     model.apply(init_weights)
 
+    print("INPUT DIM:", INPUT_DIM)
+    print("OUTPUT_DIM:", OUTPUT_DIM)
+    print(len(mod_eng_vocab))
+    print(len(old_eng_vocab))
+
     print(f"The model has {count_parameters(model):,} trainable parameters")
 
     optimizer = optim.Adam(model.parameters())
@@ -155,32 +164,67 @@ def baseline_model_main():
     PAD_IDX = old_eng_vocab.lookup_indices(["<pad>"])[0]
     criterion = nn.CrossEntropyLoss(ignore_index=PAD_IDX)
 
+    N_EPOCHS = 10
+    CLIP = 1
+    best_valid_loss = float('inf')
+
+    for epoch in range(N_EPOCHS):
+        start_time = time.time()
+
+        train_loss = train(model, training_loader_iterator, optimizer, criterion, CLIP, device)
+
+        end_time = time.time()
+
+        epoch_mins, epoch_secs = epoch_time(start_time, end_time)
+
+        print(f'Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s')
+        print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
 
 def train(model:nn.Module,
         training_loader,
         optimizer:optim.Adam, 
         criterion:nn.modules.loss.CrossEntropyLoss, 
-        clip:float):
+        clip:float,
+        DEVICE
+        ):
     
     model.train()
 
     epoch_loss = 0
 
-    for i, batch in enumerate(training_loader):
-        old_eng_tgt_batch = batch[0]
-        mod_eng_src_batch = batch[1]
+    for batch in training_loader:
 
+        # tgt and src have dimensions
+        # 1 x batch size x sequence length
+        # The model does not like outer redundant dimension of 1
+        # So we squeeze to get rid of that dimension
+        src, tgt = batch[1], batch[0]
+
+        print(type(src))
+        print(type(tgt))
+        print("SOURCE TENSOR BEFORE SHAPE:", src.size())
+        print("TARGET TENSOR BEFORE SHAPE:", tgt.size())
+
+        src = src.squeeze(0)
+        tgt = tgt.squeeze(0)
+        src = torch.t(src)
+        tgt = torch.t(tgt)
+
+        print(type(src))
+        print(type(tgt))
+        print("SOURCE TENSOR SHAPE:", src.size())
+        print("TARGET TENSOR SHAPE:", tgt.size())
         #might need to reshape the data into something else
         #right now data is batch size x sentence length
         #but want sentence length x batch size
 
         optimizer.zero_grad()
-        output = model(mod_eng_src_batch, old_eng_tgt_batch)
+        output = model(src, tgt)
 
         output = output[1:].view(-1, output.shape[-1])
-        old_eng_tgt_batch = old_eng_tgt_batch[1:].view(-1)
+        tgt = tgt[1:].view(-1)
 
-        loss = criterion(output, old_eng_tgt_batch)
+        loss = criterion(output, tgt)
         loss.backward()
 
         torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
@@ -202,9 +246,16 @@ def count_parameters(model:nn.Module):
     #number of elemets with gradients in the model
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
+def epoch_time(start_time:int, end_time:int):
+    
+    elapsed_time = end_time - start_time
+    elapsed_mins = int(elapsed_time / 60)
+    elapsed_secs = int(elapsed_time - (elapsed_mins * 60))
+    
+    return elapsed_mins, elapsed_secs
 
 
-
+baseline_model_main()
 
 
 
