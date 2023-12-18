@@ -31,3 +31,5 @@ def show_some_data(loaded_data):
         n_sample += 1
     
     print(f"{n_sample = }")
+
+data_loader_main()

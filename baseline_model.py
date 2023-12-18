@@ -156,6 +156,41 @@ def baseline_model_main():
     criterion = nn.CrossEntropyLoss(ignore_index=PAD_IDX)
 
 
+def train(model:nn.Module,
+        training_loader,
+        optimizer:optim.Adam, 
+        criterion:nn.modules.loss.CrossEntropyLoss, 
+        clip:float):
+    
+    model.train()
+
+    epoch_loss = 0
+
+    for i, batch in enumerate(training_loader):
+        old_eng_tgt_batch = batch[0]
+        mod_eng_src_batch = batch[1]
+
+        #might need to reshape the data into something else
+        #right now data is batch size x sentence length
+        #but want sentence length x batch size
+
+        optimizer.zero_grad()
+        output = model(mod_eng_src_batch, old_eng_tgt_batch)
+
+        output = output[1:].view(-1, output.shape[-1])
+        old_eng_tgt_batch = old_eng_tgt_batch[1:].view(-1)
+
+        loss = criterion(output, old_eng_tgt_batch)
+        loss.backward()
+
+        torch.nn.utils.clip_grad_norm_(model.parameters(), clip)
+        optimizer.step()
+
+        epoch_loss += loss.item()
+
+    return epoch_loss / len(training_loader)
+
+
 def init_weights(m:nn.Module):
     #intializes weights between -0.08 and 0.08 by sampling from a
     #unifrom distribution
