@@ -12,12 +12,13 @@ def preprocess_main():
     OUTPUT_FILE_PATH = 'cleaned_data_no_blanks.csv'
     NUM_ROWS = 50670
 
+    print("<----PREPROCESSING DATA...GETTING DATA---->")
 
     data_pipe = dp.iter.IterableWrapper([OUTPUT_FILE_PATH])
     data_pipe = dp.iter.FileOpener(data_pipe, mode='rb')
     data_pipe = data_pipe.parse_csv(skip_lines=1, delimiter=',', as_tuple = True)
 
-    print_data_pipe_sample(data_pipe,10)
+    # print_data_pipe_sample(data_pipe,10)
 
     #split the data into validation and train
     #!for ~50,000 samples 5% (0.05) is about 2500 samples for the test set and validation set
@@ -29,16 +30,16 @@ def preprocess_main():
     mod_eng_vocab = build_vocabulary(train_dp, 0)
     old_eng_vocab = build_vocabulary(train_dp, 1)
 
-    print(mod_eng_vocab.get_itos()[:9])
-    print(old_eng_vocab.get_itos()[:9])
+    # print(mod_eng_vocab.get_itos()[:9])
+    # print(old_eng_vocab.get_itos()[:9])
 
-    print("\nTESTING TRANSFORMS:\n")
-    for i in range(10):
-        print_transforms_sample(train_dp, mod_eng_vocab, 0, i)
-        print_transforms_sample(train_dp, old_eng_vocab, 1, i)
-        print('\n')
-        print_transforms_sample(valid_dp,mod_eng_vocab, 0, i)
-        print_transforms_sample(valid_dp, old_eng_vocab, 1,i)
+    # print("\nTESTING TRANSFORMS:\n")
+    # for i in range(10):
+    #     print_transforms_sample(train_dp, mod_eng_vocab, 0, i)
+    #     print_transforms_sample(train_dp, old_eng_vocab, 1, i)
+    #     print('\n')
+    #     print_transforms_sample(valid_dp,mod_eng_vocab, 0, i)
+    #     print_transforms_sample(valid_dp, old_eng_vocab, 1,i)
 
     train_dp = train_dp.map(apply_transforms)
     valid_dp = valid_dp.map(apply_transforms)
@@ -56,17 +57,19 @@ def preprocess_main():
     )
 
     train_dp = train_dp.map(separate_src_tgt)
-    print(list(train_dp)[1])
+    # print(list(train_dp)[1])
     valid_dp = valid_dp.map(separate_src_tgt)
-    print(list(valid_dp)[1])
+    # print(list(valid_dp)[1])
 
     train_dp = train_dp.map(apply_padding)
     valid_dp = valid_dp.map(apply_padding)
 
-    print('\n')
+    # print('\n')
 
-    print_fully_processed_samples(train_dp, mod_eng_vocab, old_eng_vocab, 5)
-    print_fully_processed_samples(valid_dp, mod_eng_vocab, old_eng_vocab, 5)
+    # print_fully_processed_samples(train_dp, mod_eng_vocab, old_eng_vocab, 5)
+    # print_fully_processed_samples(valid_dp, mod_eng_vocab, old_eng_vocab, 5)
+
+    print("<----FINISHED PREPROCESSING DATA---->\n\n")
 
 
     return train_dp, valid_dp, mod_eng_vocab, old_eng_vocab
@@ -116,6 +119,7 @@ def build_transforms(vocab):
 
 def apply_transforms(txt_seg_pair):
     return(
+        #returns a text transform object which then takes the tokenized text as input
         build_transforms(mod_eng_vocab)(tokenize(txt_seg_pair[0])),
         build_transforms(old_eng_vocab)(tokenize(txt_seg_pair[1]))
     )

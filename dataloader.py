@@ -3,6 +3,10 @@ import torch
 from torch.utils.data import DataLoader
 
 def data_loader_main():
+
+    print("<----LOADING DATA INTO DATA LOADERs---->")
+
+
     NUM_ROWS = 50670
 
     train_dp, valid_dp, mod_eng_vocab, old_eng_vocab = preprocess_main()
@@ -14,6 +18,9 @@ def data_loader_main():
     show_some_data(train_loader)
     print('\n')
     show_some_data(valid_loader)
+
+    print("<----FINISHED LOADING DATA INTO DATA LOADERs---->\n\n")
+
 
     return train_loader, valid_loader, mod_eng_vocab, old_eng_vocab
 
@@ -31,5 +38,3 @@ def show_some_data(loaded_data):
         n_sample += 1
     
     print(f"{n_sample = }")
-
-data_loader_main()

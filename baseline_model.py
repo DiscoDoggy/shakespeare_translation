@@ -27,7 +27,7 @@ class Encoder(nn.Module):
         self.dropout = dropout
 
         #intializing layers
-        self.embedding = nn.Embedding(input_dim, emb_dim)
+        self.embedding = nn.Embedding(input_dim, emb_dim) #18202 x 256
         self.rnn = nn.LSTM(emb_dim, hid_dim, n_layers, dropout=dropout)
         self.dropout = nn.Dropout(dropout)
 
@@ -124,6 +124,7 @@ class Seq2Seq(nn.Module):
 def baseline_model_main():
     #because of the use of datapipe bucket batch, each element in the dataloader
     #are batches and not individual text sequences
+    global mod_eng_vocab
     train_loader, valid_loader, mod_eng_vocab, old_eng_vocab = data_loader_main()
     training_loader_iterator = iter(train_loader)
     #Code attempts to make Pytorch model training and execution reproducible by setting seed
@@ -137,8 +138,8 @@ def baseline_model_main():
 
     #Training 
     # __len__() → int[source]
-    INPUT_DIM = mod_eng_vocab.__len__()
-    OUTPUT_DIM = old_eng_vocab.__len__()
+    INPUT_DIM = len(mod_eng_vocab)
+    OUTPUT_DIM = len(old_eng_vocab)
     ENC_EMB_DIM = 256
     DEC_EMB_DIM = 256
     HID_DIM = 512
@@ -150,7 +151,7 @@ def baseline_model_main():
     dec = Decoder(OUTPUT_DIM, DEC_EMB_DIM, HID_DIM, N_LAYERS, DEC_DROPOUT)
 
     model = Seq2Seq(enc,dec,device).to(device)
-    model.apply(init_weights)
+    print(model.apply(init_weights))
 
     print("INPUT DIM:", INPUT_DIM)
     print("OUTPUT_DIM:", OUTPUT_DIM)
@@ -170,7 +171,7 @@ def baseline_model_main():
 
     for epoch in range(N_EPOCHS):
         start_time = time.time()
-
+        #print the sequence im looking at currently because error
         train_loss = train(model, training_loader_iterator, optimizer, criterion, CLIP, device)
 
         end_time = time.time()
@@ -194,17 +195,18 @@ def train(model:nn.Module,
 
     for batch in training_loader:
 
-        # tgt and src have dimensions
-        # 1 x batch size x sequence length
-        # The model does not like outer redundant dimension of 1
-        # So we squeeze to get rid of that dimension
-        src, tgt = batch[1], batch[0]
+        src, tgt = batch[0], batch[1]
 
         print(type(src))
         print(type(tgt))
         print("SOURCE TENSOR BEFORE SHAPE:", src.size())
         print("TARGET TENSOR BEFORE SHAPE:", tgt.size())
 
+        # tgt and src have dimensions
+        # 1 x batch size x sequence length
+        # The model does not like outer redundant dimension of 1
+        # So we squeeze to get rid of that dimension
+        #we then apply a transpose to create a sequence length x batch size tensor
         src = src.squeeze(0)
         tgt = tgt.squeeze(0)
         src = torch.t(src)
@@ -214,15 +216,14 @@ def train(model:nn.Module,
         print(type(tgt))
         print("SOURCE TENSOR SHAPE:", src.size())
         print("TARGET TENSOR SHAPE:", tgt.size())
-        #might need to reshape the data into something else
-        #right now data is batch size x sentence length
-        #but want sentence length x batch size
+
+        print_max_values_in_tensor(src,mod_eng_vocab)
 
         optimizer.zero_grad()
         output = model(src, tgt)
 
         output = output[1:].view(-1, output.shape[-1])
-        tgt = tgt[1:].view(-1)
+        tgt = tgt[1:].contiguous().view(-1)
 
         loss = criterion(output, tgt)
         loss.backward()
@@ -233,7 +234,6 @@ def train(model:nn.Module,
         epoch_loss += loss.item()
 
     return epoch_loss / len(training_loader)
-
 
 def init_weights(m:nn.Module):
     #intializes weights between -0.08 and 0.08 by sampling from a
@@ -253,6 +253,14 @@ def epoch_time(start_time:int, end_time:int):
     elapsed_secs = int(elapsed_time - (elapsed_mins * 60))
     
     return elapsed_mins, elapsed_secs
+
+def print_max_values_in_tensor(batch, vocab):
+    # # columns = torch.split(batch, 1, dim=1)
+    # for column in columns:
+    #     print("AS INTEGERS:", column)
+    for tens in batch:
+        print("AS INTEGERS:", tens)
+
 
 
 baseline_model_main()
