@@ -127,6 +127,7 @@ def baseline_model_main():
     global mod_eng_vocab
     train_loader, valid_loader, mod_eng_vocab, old_eng_vocab = data_loader_main()
     training_loader_iterator = iter(train_loader)
+    valid_loader_iterator = iter(valid_loader)
     #Code attempts to make Pytorch model training and execution reproducible by setting seed
     SEED = 1234
     random.seed(SEED)
@@ -171,12 +172,17 @@ def baseline_model_main():
 
     for epoch in range(N_EPOCHS):
         start_time = time.time()
-        #print the sequence im looking at currently because error
+
         train_loss = train(model, training_loader_iterator, optimizer, criterion, CLIP, device)
+        valid_loss = evaluate(model, valid_loader_iterator, criterion)
 
         end_time = time.time()
 
         epoch_mins, epoch_secs = epoch_time(start_time, end_time)
+
+        if valid_loss < best_valid_loss:
+            best_valid_loss = valid_loss
+            torch.save(model.state_dict(), 'tut1-model.pt')
 
         print(f'Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s')
         print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
@@ -234,6 +240,26 @@ def train(model:nn.Module,
         epoch_loss += loss.item()
 
     return epoch_loss / len(training_loader)
+
+def evaluate(model: nn.Module,
+             valid_loader,
+             criterion:nn.modules.loss.CrossEntropyLoss):
+    model.eval()
+    epoch_loss = 0
+
+    with torch.no_grad():
+        for batch in valid_loader:
+            src = batch[0]
+            tgt = batch[1]
+
+            output = model(src,tgt,0)
+
+            output = output[1:].view(-1, output.shape[-1])
+            tgt = tgt[1:].view(-1)
+
+            loss = criterion(output,tgt)
+            epoch_loss += loss.item()
+    return epoch_loss / len(valid_loader)
 
 def init_weights(m:nn.Module):
     #intializes weights between -0.08 and 0.08 by sampling from a
