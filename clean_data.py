@@ -34,6 +34,8 @@ def clean_data(data):
     data = data.drop_duplicates(subset=['Untranslated Shakespeare'])
     data = data.drop_duplicates(subset=['Translated Shakespeare'])
 
+    data = remove_end_line_punctuation(data)
+
 
     return data
 
@@ -100,6 +102,31 @@ def remove_unclosed_symbs(data):
             data = data.drop(i)
     
     return data
+
+def remove_end_line_punctuation(data):
+
+    for i in range(len(data)):
+        untranslated_cell = data.iloc[i, 0]
+        translated_cell = data.iloc[i, 1]
+
+        last_element = untranslated_cell[-1:]
+
+        if last_element == "," or last_element == ';' or last_element == '"' \
+        or last_element == ':' or last_element == '\'':
+            
+            new_element = untranslated_cell[:-1]
+            data.iloc[i, 0] = new_element
+        
+        last_element = translated_cell[-1:]
+
+        if last_element == "," or last_element == ';' or last_element == '"' \
+        or last_element == ':' or last_element == '\'':
+            
+            new_element = translated_cell[:-1]
+            data.iloc[i, 1] = new_element
+    
+    return data
+
 
 def check_unclosed_symbs(data):
     """
@@ -182,10 +209,7 @@ def clean_data_main():
     # write_cleaned_data(df)
     # output_random_row(df, 100)
 
-clean_data_main()
-
-
-    
+# clean_data_main()
 
 """
 * Preprocessing 

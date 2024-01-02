@@ -9,7 +9,7 @@ def remove_empty_lines(in_fnam, out_fnam):
                     writer.writerow(row)
 
 
-INPUT_FILE_PATH = 'cleaned_data_copy.csv'
-OUTPUT_FILE_PATH = 'cleaned_data_no_blanks.csv'
+INPUT_FILE_PATH = 'cleaned_data_v2.csv'
+OUTPUT_FILE_PATH = 'cleaned_data_v2_no_blanks.csv'
 
 remove_empty_lines(INPUT_FILE_PATH, OUTPUT_FILE_PATH)
