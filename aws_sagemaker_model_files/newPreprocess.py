@@ -5,11 +5,11 @@ import torchdata.datapipes as dp
 from torchdata.datapipes.iter import IterableWrapper
 from torchtext.vocab import build_vocab_from_iterator
 
-def preprocess_main():
+def preprocess_main(cleaned_data):
     #! FIXME : Validation, test set both included in the vocabulary
     # *Only the training set should be included in vocabulary meaning that 
     # *Splitting of the data should occur earlier on 
-    OUTPUT_FILE_PATH = 'cleaned_data_v2_no_blanks.csv'
+    OUTPUT_FILE_PATH = cleaned_data
     NUM_ROWS = 50670
 
     print("<----PREPROCESSING DATA...GETTING DATA---->")
