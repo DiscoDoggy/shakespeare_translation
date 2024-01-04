@@ -28,7 +28,7 @@ def parse_args():
 
     #hyperparameteres sent by client passed as command line arguments
      # parser.add_argument("--batch_size", type=int, default=4)
-    # parser.add_argument("--learning_rate", type=float, default=0.1)
+    parser.add_argument("--learning_rate", type=float, default=0.01)
     parser.add_argument("--epochs", type=int, default=1)
 
     #data directory locations (either local meaning notebook storage EC3? or on s3)
@@ -55,6 +55,7 @@ def baseline_model_main():
     train_loader, valid_loader, mod_eng_vocab, old_eng_vocab = data_loader_main(get_training_data(args.train))
     training_loader_iterator = iter(train_loader)
     valid_loader_iterator = iter(valid_loader)
+
     #Code attempts to make Pytorch model training and execution reproducible by setting seed
     SEED = 1234
     random.seed(SEED)
@@ -88,12 +89,12 @@ def baseline_model_main():
 
     print(f"The model has {count_parameters(model):,} trainable parameters")
 
-    optimizer = optim.Adam(model.parameters())
+    optimizer = optim.Adam(model.parameters(), lr = args.learning_rate)
 
     PAD_IDX = old_eng_vocab.lookup_indices(["<pad>"])[0]
     criterion = nn.CrossEntropyLoss(ignore_index=PAD_IDX)
 
-    N_EPOCHS = 10
+    N_EPOCHS = args.epochs
     CLIP = 1
     best_valid_loss = float('inf')
 
@@ -231,5 +232,6 @@ def print_max_values_in_tensor(batch, vocab):
     for tens in batch:
         print("AS INTEGERS:", tens)
 
-args, _ = parse_args()
-baseline_model_main()
+if __name__ =='__main__':
+    args, _ = parse_args()
+    baseline_model_main()
