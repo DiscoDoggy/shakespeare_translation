@@ -121,6 +121,11 @@ def baseline_model_main():
         logger.info(f'\tValidation Loss:{valid_loss: 3f} | Valid PPL:{math.exp(valid_loss):7.3f}')
         logger.info(f'Best validation loss: {valid_loss} | Best on Epoch: {curr_best_epoch}')
 
+        print(f'Epoch: {epoch+1:02} | Time: {epoch_mins}m {epoch_secs}s')
+        print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
+        print(f'\tValidation Loss:{valid_loss: 3f} | Valid PPL:{math.exp(valid_loss):7.3f}')
+        print(f'Best validation loss: {valid_loss} | Best on Epoch: {curr_best_epoch}')
+
     torch.save(model.state_dict(), args.model_dir + "/model.pth")
     inference_code_path = args.model_dir + '/code/'
     
@@ -148,10 +153,10 @@ def train(model:nn.Module,
 
         src, tgt = batch[0], batch[1]
 
-        print(type(src))
-        print(type(tgt))
-        print("SOURCE TENSOR BEFORE SHAPE:", src.size())
-        print("TARGET TENSOR BEFORE SHAPE:", tgt.size())
+        # print(type(src))
+        # print(type(tgt))
+        # print("SOURCE TENSOR BEFORE SHAPE:", src.size())
+        # print("TARGET TENSOR BEFORE SHAPE:", tgt.size())
 
         # tgt and src have dimensions
         # 1 x batch size x sequence length
@@ -163,12 +168,12 @@ def train(model:nn.Module,
         src = torch.t(src)
         tgt = torch.t(tgt)
 
-        print(type(src))
-        print(type(tgt))
-        print("SOURCE TENSOR SHAPE:", src.size())
-        print("TARGET TENSOR SHAPE:", tgt.size())
+        # print(type(src))
+        # print(type(tgt))
+        # print("SOURCE TENSOR SHAPE:", src.size())
+        # print("TARGET TENSOR SHAPE:", tgt.size())
 
-        print_max_values_in_tensor(src,mod_eng_vocab)
+        # print_max_values_in_tensor(src,mod_eng_vocab)
 
         optimizer.zero_grad()
         output = model(src, tgt)

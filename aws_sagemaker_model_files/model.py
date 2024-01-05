@@ -28,7 +28,7 @@ class Encoder(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, src:Tensor) -> Tuple[Tensor,Tensor]:
-        print("Tensor shape:", src.size())
+        # print("Tensor shape:", src.size())
         embedded = self.dropout(self.embedding(src))
         outputs, (hidden,cell) = self.rnn(embedded)
         return hidden, cell
