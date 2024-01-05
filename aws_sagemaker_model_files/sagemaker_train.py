@@ -16,6 +16,7 @@ import shutil
 from dataloader import data_loader_main
 from model import Encoder, Decoder, Seq2Seq
 
+# ADD GPUUUUUUUUUU TRAININGGGGGGGGGGGGGGGGGGGGGGG
 
 #AWS interaction code inspired by https://github.com/aws/amazon-sagemaker-examples/tree/main/sagemaker-script-mode/pytorch_script
 
@@ -64,6 +65,8 @@ def baseline_model_main():
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(type(device))
+    print("DEVICE TYPE IS:", device)
+    logger.info(f"THE DEVICE TYPE IS {device}")
 
     #Training 
     # __len__() → int[source]
@@ -102,7 +105,7 @@ def baseline_model_main():
         start_time = time.time()
 
         train_loss = train(model, training_loader_iterator, optimizer, criterion, CLIP, device)
-        valid_loss = evaluate(model, valid_loader_iterator, criterion)
+        valid_loss = evaluate(model, valid_loader_iterator, criterion, device)
 
         end_time = time.time()
 
@@ -151,7 +154,10 @@ def train(model:nn.Module,
 
     for batch in training_loader:
 
+        #move data to GPU (if available)
         src, tgt = batch[0], batch[1]
+        src = src.to(DEVICE)
+        tgt = tgt.to(DEVICE)
 
         # print(type(src))
         # print(type(tgt))
@@ -193,7 +199,8 @@ def train(model:nn.Module,
 
 def evaluate(model: nn.Module,
              valid_loader,
-             criterion:nn.modules.loss.CrossEntropyLoss):
+             criterion:nn.modules.loss.CrossEntropyLoss, 
+             DEVICE):
     model.eval()
     epoch_loss = 0
 
@@ -201,6 +208,9 @@ def evaluate(model: nn.Module,
         for batch in valid_loader:
             src = batch[0]
             tgt = batch[1]
+
+            src = src.to(DEVICE)
+            tgt = tgt.to(DEVICE)
 
             output = model(src,tgt,0)
 
