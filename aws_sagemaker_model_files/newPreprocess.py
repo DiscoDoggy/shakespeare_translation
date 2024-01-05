@@ -1,3 +1,5 @@
+import nltk
+nltk.download('punkt')
 from nltk.tokenize import word_tokenize
 import torchtext.transforms
 from torchtext.transforms import VocabTransform

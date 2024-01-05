@@ -40,7 +40,7 @@ def parse_args():
     return parser.parse_known_args()
 
 def get_training_data(train_dir):
-    filepath = os.path.join(train_dir, "data.csv")
+    filepath = os.path.join(train_dir, "train.csv")
     return filepath
 
 def baseline_model_main():
