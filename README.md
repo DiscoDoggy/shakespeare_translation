@@ -28,8 +28,8 @@ Here is an example!
 * Perform data preprocessing :white_check_mark:
 * Perform an Exploratory Data Analysis (EDA) :white_check_mark:
 * Create model :white_check_mark:
-* Train model:white_check_mark:
-* Test model :white_check_mark:
+* Train model :white_check_mark:
+* Validate model :white_check_mark:
 * Integrate model into discord bot
  
 #### Scraping and Cleaning the Data
@@ -48,28 +48,46 @@ My data collection and data cleaning forms an ETL (Extract, Transform, Load) dat
 To scrape the data, I use a combination of BeautifulSoup and Selenium. There were a few challenges when scraping the data. One of the major differences between Shakespearean English and Modern English is that they are still the same language. 
 The translation between the two takes very large liberties in where to place punctuation. This means that the end of a sentence in the Shakesperean English is not necessairly the end of a sentence in the Modern English translation. This is a challenge because
 in traditional machine translation between two different languages, the text segments are normally paired by the corresponding end of sentence which matches well across langauges. This is where Selenium solves the problem. The Modern Englsih and Shakesperean English segments are color coded where say a red segment of text in the Modern English translation corresponds to the Shakespearean English red line that it aims to translate. Selenium allows me to grab the color coded javascript attribute while Beautiful Soup allows me to grab the HTML text embedded deeply in the website. 
+| Example of aligning color coded text segments |
+|---|
+|![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/0fa65347-3ea1-4a2b-9da8-9b79aba32f69)|
+
 
 ### Cleaning the Data
 For cleaning the data, I performed the following tasks:
 * Substituted the unknown character symbol for a space. If this created a double or more space, in future
 cleaning steps those extra spaces would be removed.
-* Shakespeare often uses brackets and parenthesis to indicate actions but this is unlikely to see in social media tweets so I remove text between parenthesis and brackets including the parenthsis and brackets.
-* I strip whitespace
+* Converted all text to lowercase and utilized regular expressions to identify punctuation and add a space between it and other words so that it can be tokenized. 
+* Eliminate double and triple spaces
+* Parenthesis are not used a lot in modern speech nor are brackets so I eliminated any text between brackets, parenthesis, and braces and including the braces, parenthesis, and brackets.
+* Strip leading and trailing whitespace
+* Because of how text segments are aligned there are a lot of open parenthsis, and its counterparts, without closing. I accounted for this by removing unpaired parenthesis, and its counterparts, pairs.
+* Dropped duplicate segments
+* Because text is aligned by color and not by sentence, some segments end in semicolons, commas, and other punctuation that would not ever end a sentence. I remove these non ending sentence punctuations.
 * Remove any text pairs that contain French
 
-For preprocessing the data, I tokenize the data where each word and each punctuation is its own token. I then append an 
-EOS (end of segment) token to the end of each text sample. To prepare the data for the model, I also pad text segments which are below 10 tokens and truncate those that are over 10 tokens such that the model can batach process multiple text segments at a time. 
+Because translated works are technically copywritten, I do not include any of the data files in this repository but will provide example images of the data transformation and a very small sample. 
 
-Because translated works are technically copywritten, I do not include any of the data files in this repository but will provide example images of the data transformation. 
 | Raw data sample  | Cleaned Data Sample  |
 |---|---|
-|![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/bb152543-3f21-47c0-9ce5-3a5109f3cc96)|![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/3f74850a-aa89-49fb-afc2-4ef4ba759650)| 
+|![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/bb152543-3f21-47c0-9ce5-3a5109f3cc96)|![image](https://github.com/DiscoDoggy/shakespeare_translation/assets/110149934/51d042cc-74cd-4180-8e61-5be2ca93c6d2)| 
 
-The cleaned data has been tokenized, and the unknown character has been removed. The extra comma in the cleaned data is the resul the CSV file placing a comma to separate columns. 
+### Preprocessing the Data 
+Preprocessing the data is just another way of saying preparing the data so that it can be used by Pytorch. Because I am using a custom dataset that I created and I'm writing the data from a CSV, I use PyTorch's datapipe which will essentially house the transformed, preprocessed data and wrap an iterable over it so that it can be used by PyTorch's DataLoader in the model. 
+To preprocess the data I did the following: 
+* Split the data into a training and validation set
+* Tokenize the data (splitting text segments into a list of its individual words and punctuatoins)
+* Created a vocabulary for both the modern english training data and Shakespearean training data.
+* Created batches of text data that is then padded so that each text segment in the batch is equal to the longest segment in the batch.
+* Converted the batches to tensors.
+
+All of the above is wrapped into a dataloader which is then eventually used by the PyTorch model to read its training and validation data in. 
+
 
 ### [Exploratory Data Analysis](/shakespeare_translation_eda.ipynb) 
 Within the exploratory data analysis, I perform a term frequency analysis and synthesize statistics regarding the data itself such as how long untranslated and translated text sequences are. 
-The analysis can be found [here](/shakespeare_translation_eda.ipynb)
+The analysis can be found [here](/shakespeare_translation_eda.ipynb) 
+
 
 [beautifulsoup-shield]: https://img.shields.io/badge/-BEAUTIFULSOUP-blue?style=for-the-badge
 [beautifulsoup-url]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
