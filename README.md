@@ -88,6 +88,14 @@ All of the above is wrapped into a dataloader which is then eventually used by t
 Within the exploratory data analysis, I perform a term frequency analysis and synthesize statistics regarding the data itself such as how long untranslated and translated text sequences are. 
 The analysis can be found [here](/shakespeare_translation_eda.ipynb) 
 
+### The Model 
+The PyTorch model is an encoder-decoder architecture built upon 2-layer LSTM RNNs. The model is roughly 31,000,000 parameters. I use dropout to reduce overfitting. The model is inspired by the seminal 2014 paper from Sutskever et al. [Sequence to Sequence Learning with Neural Networks ](https://arxiv.org/abs/1409.3215) 
+
+For training, because I do not have an NVIDIA GPU, I utilized Amazon Sagemaker's scriptmode which allows you to train a custom model by interfacing with their cloud backend and PyTorch containers. I trained on their NVIDIA T4 GPU for 100 EPOCHS taking around 8 hours with a learning rate of 0.01 and a batch size of 64.To use Sagemaker I had to change some of the code that I had written locally. This is why there is a folder called [aws_sagemaker_model_files](https://github.com/DiscoDoggy/shakespeare_translation/tree/main/aws_sagemaker_model_files) . Some of the main changes between the sagemaker model files and the local files I use are: 
+* I created a small requirements.txt to have Sagemaker install any libraries that are not housed locally
+* I split the model logic from the training and validation script since the training script is my EntryPoint script while the model is not.
+* The entrypoint script contains a method to receieve hyperparameters and environment variables such as the cloud location of the training data and scripts
+* Note: the Sagemaker Jupyter notebook I use to interface with Sagemaker is not included here 
 
 [beautifulsoup-shield]: https://img.shields.io/badge/-BEAUTIFULSOUP-blue?style=for-the-badge
 [beautifulsoup-url]: https://www.crummy.com/software/BeautifulSoup/bs4/doc/
