@@ -47,12 +47,12 @@ def preprocess_main():
     # print(temp[:10])
 
     train_dp = train_dp.bucketbatch(
-        batch_size=4, batch_num=5, bucket_num=1,
+        batch_size=64, batch_num=5, bucket_num=1,
         use_in_batch_shuffle=False, sort_key = sort_bucket
     )
 
     valid_dp = valid_dp.bucketbatch(
-        batch_size=4, batch_num=5, bucket_num=1,
+        batch_size=64, batch_num=5, bucket_num=1,
         use_in_batch_shuffle=False, sort_key = sort_bucket
     )
 

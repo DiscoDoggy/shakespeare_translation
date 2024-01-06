@@ -4,9 +4,13 @@ import torch.optim as optim
 from torch import Tensor
 from typing import Tuple
 
+from tqdm import tqdm
+
 import random
 import math
 import time
+from time import sleep
+
 
 from dataloader import data_loader_main
 
@@ -32,7 +36,7 @@ class Encoder(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, src:Tensor) -> Tuple[Tensor,Tensor]:
-        print("Tensor shape:", src.size())
+        # print("Tensor shape:", src.size())
         embedded = self.dropout(self.embedding(src))
         outputs, (hidden,cell) = self.rnn(embedded)
         return hidden, cell
@@ -154,10 +158,10 @@ def baseline_model_main():
     model = Seq2Seq(enc,dec,device).to(device)
     print(model.apply(init_weights))
 
-    print("INPUT DIM:", INPUT_DIM)
-    print("OUTPUT_DIM:", OUTPUT_DIM)
-    print(len(mod_eng_vocab))
-    print(len(old_eng_vocab))
+    # print("INPUT DIM:", INPUT_DIM)
+    # print("OUTPUT_DIM:", OUTPUT_DIM)
+    # print(len(mod_eng_vocab))
+    # print(len(old_eng_vocab))
 
     print(f"The model has {count_parameters(model):,} trainable parameters")
 
@@ -199,14 +203,15 @@ def train(model:nn.Module,
 
     epoch_loss = 0
 
-    for batch in training_loader:
-
+    for batch in tqdm(training_loader, total = 782):
+    # for _, batch in tqdm(enumerate(training_loader, 0), unit="batch", total=len(training_loader)):
+        sleep(0.01)
         src, tgt = batch[0], batch[1]
 
-        print(type(src))
-        print(type(tgt))
-        print("SOURCE TENSOR BEFORE SHAPE:", src.size())
-        print("TARGET TENSOR BEFORE SHAPE:", tgt.size())
+        # print(type(src))
+        # print(type(tgt))
+        # print("SOURCE TENSOR BEFORE SHAPE:", src.size())
+        # print("TARGET TENSOR BEFORE SHAPE:", tgt.size())
 
         # tgt and src have dimensions
         # 1 x batch size x sequence length
@@ -218,12 +223,12 @@ def train(model:nn.Module,
         src = torch.t(src)
         tgt = torch.t(tgt)
 
-        print(type(src))
-        print(type(tgt))
-        print("SOURCE TENSOR SHAPE:", src.size())
-        print("TARGET TENSOR SHAPE:", tgt.size())
+        # print(type(src))
+        # print(type(tgt))
+        # print("SOURCE TENSOR SHAPE:", src.size())
+        # print("TARGET TENSOR SHAPE:", tgt.size())
 
-        print_max_values_in_tensor(src,mod_eng_vocab)
+        # print_max_values_in_tensor(src,mod_eng_vocab)
 
         optimizer.zero_grad()
         output = model(src, tgt)

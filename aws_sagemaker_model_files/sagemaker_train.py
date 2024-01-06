@@ -5,6 +5,9 @@ import torch.optim as optim
 import random
 import math
 import time
+from time import sleep
+
+from tqdm import tqdm
 
 import os
 import sys
@@ -128,6 +131,7 @@ def baseline_model_main():
         print(f'\tTrain Loss: {train_loss:.3f} | Train PPL: {math.exp(train_loss):7.3f}')
         print(f'\tValidation Loss:{valid_loss: 3f} | Valid PPL:{math.exp(valid_loss):7.3f}')
         print(f'Best validation loss: {valid_loss} | Best on Epoch: {curr_best_epoch}')
+        print("DEVICE TYPE IS:", device)
 
     torch.save(model.state_dict(), args.model_dir + "/model.pth")
     inference_code_path = args.model_dir + '/code/'
@@ -151,9 +155,9 @@ def train(model:nn.Module,
     model.train()
 
     epoch_loss = 0
-
-    for batch in training_loader:
-
+    for batch in tqdm(training_loader, total=782):
+        sleep(0.01)
+        
         #move data to GPU (if available)
         src, tgt = batch[0], batch[1]
         src = src.to(DEVICE)
@@ -195,7 +199,7 @@ def train(model:nn.Module,
 
         epoch_loss += loss.item()
 
-    return epoch_loss / len(training_loader)
+    return epoch_loss / 750
 
 def evaluate(model: nn.Module,
              valid_loader,
@@ -205,21 +209,25 @@ def evaluate(model: nn.Module,
     epoch_loss = 0
 
     with torch.no_grad():
-        for batch in valid_loader:
+        for batch in tqdm(valid_loader, total=39):
             src = batch[0]
             tgt = batch[1]
-
             src = src.to(DEVICE)
             tgt = tgt.to(DEVICE)
+
+            src = src.squeeze(0)
+            tgt = tgt.squeeze(0)
+            src = torch.t(src)
+            tgt = torch.t(tgt)
 
             output = model(src,tgt,0)
 
             output = output[1:].view(-1, output.shape[-1])
-            tgt = tgt[1:].view(-1)
+            tgt = tgt[1:].contiguous().view(-1)
 
             loss = criterion(output,tgt)
             epoch_loss += loss.item()
-    return epoch_loss / len(valid_loader)
+    return epoch_loss / 39
 
 def init_weights(m:nn.Module):
     #intializes weights between -0.08 and 0.08 by sampling from a
