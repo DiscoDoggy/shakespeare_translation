@@ -3,6 +3,7 @@
 
 #ignore py cache
 *.pyc
+__init__.py
 
 #Content Links
 act_content_links.txt
@@ -11,7 +12,15 @@ shakespeare_and_translation_original_data.csv
 cleaned_data.csv
 cleaned_data_no_blanks.csv
 cleaned_data_copy.csv
+cleaned_data_v2.csv
+cleaned_data_v2_no_blanks.csv
+
+#model information
+discord_bot/model.pth
+model.tar.gz
+model_info/
 
 #testing out things files
 testing_scrape.py
 scrape_text_preprocess_test.py
+playground.py
