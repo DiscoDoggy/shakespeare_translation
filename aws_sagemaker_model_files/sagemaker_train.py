@@ -57,8 +57,8 @@ def baseline_model_main():
     #preprocess the data, batch and return everything to the dataloader which returns the training data
     #loader and a valid data loader along with vocabularies
     train_loader, valid_loader, mod_eng_vocab, old_eng_vocab = data_loader_main(get_training_data(args.train))
-    training_loader_iterator = iter(train_loader)
-    valid_loader_iterator = iter(valid_loader)
+    # training_loader_iterator = iter(train_loader)
+    # valid_loader_iterator = iter(valid_loader)
 
     #Code attempts to make Pytorch model training and execution reproducible by setting seed
     SEED = 1234
@@ -107,8 +107,8 @@ def baseline_model_main():
     for epoch in range(N_EPOCHS):
         start_time = time.time()
 
-        train_loss = train(model, training_loader_iterator, optimizer, criterion, CLIP, device)
-        valid_loss = evaluate(model, valid_loader_iterator, criterion, device)
+        train_loss = train(model, train_loader, optimizer, criterion, CLIP, device)
+        valid_loss = evaluate(model, valid_loader, criterion, device)
 
         end_time = time.time()
 
@@ -140,8 +140,8 @@ def baseline_model_main():
         os.mkdir(inference_code_path)
         logger.info("Created a folder at {}!".format(inference_code_path))
 
-    shutil.copy("train_deploy_pytorch_without_dependencies.py", inference_code_path)
-    shutil.copy("pytorch_model_def.py", inference_code_path)
+    shutil.copy("sagemaker_train.py", inference_code_path)
+    shutil.copy("model.py", inference_code_path)
     logger.info("Saving models files to {}".format(inference_code_path))
 
 def train(model:nn.Module,
