@@ -130,8 +130,8 @@ def baseline_model_main():
     #are batches and not individual text sequences
     global mod_eng_vocab
     train_loader, valid_loader, mod_eng_vocab, old_eng_vocab = data_loader_main()
-    training_loader_iterator = iter(train_loader)
-    valid_loader_iterator = iter(valid_loader)
+    # training_loader_iterator = iter(train_loader)
+    # valid_loader_iterator = iter(valid_loader)
     #Code attempts to make Pytorch model training and execution reproducible by setting seed
     SEED = 1234
     random.seed(SEED)
@@ -151,6 +151,9 @@ def baseline_model_main():
     N_LAYERS = 2
     ENC_DROPOUT = 0.5
     DEC_DROPOUT = 0.5
+
+    print(f"INPUT DIM: {INPUT_DIM}")
+    print(f"OUTPUT_DIM: {OUTPUT_DIM}")
 
     enc = Encoder(INPUT_DIM, ENC_EMB_DIM, HID_DIM, N_LAYERS, ENC_DROPOUT)
     dec = Decoder(OUTPUT_DIM, DEC_EMB_DIM, HID_DIM, N_LAYERS, DEC_DROPOUT)
@@ -177,8 +180,8 @@ def baseline_model_main():
     for epoch in range(N_EPOCHS):
         start_time = time.time()
 
-        train_loss = train(model, training_loader_iterator, optimizer, criterion, CLIP, device)
-        valid_loss = evaluate(model, valid_loader_iterator, criterion)
+        train_loss = train(model, train_loader, optimizer, criterion, CLIP, device)
+        valid_loss = evaluate(model, valid_loader, criterion)
 
         end_time = time.time()
 
@@ -293,8 +296,6 @@ def print_max_values_in_tensor(batch, vocab):
         print("AS INTEGERS:", tens)
 
 
-
-baseline_model_main()
-
-
+if __name__ == "__main__":
+    baseline_model_main()
 
