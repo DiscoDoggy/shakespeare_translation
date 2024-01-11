@@ -53,6 +53,3 @@ def get_tokens_to_id(lang_vocab):
 
     return token_doc_list
 
-if __name__ == "__main__":
-    create_collections()
-

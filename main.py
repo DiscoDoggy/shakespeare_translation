@@ -1,6 +1,4 @@
-from preprocess import *
 def main():
-    preprocess_main()
-
+    print("dsjf;askf;jafadsfdas")    
 if __name__ == "__main__":
     main()

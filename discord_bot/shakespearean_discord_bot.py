@@ -4,6 +4,7 @@
 
 import os
 import discord
+from database import get_database
 from dotenv.main import load_dotenv
 
 load_dotenv('discord_bot\secrets.env')
