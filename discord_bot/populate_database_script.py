@@ -17,6 +17,11 @@ from newPreprocess import preprocess_main
 from database import get_database
 
 def create_collections():
+    """
+    Gets the mongodb from get database and creates two collections: one for the modern english vocab
+    and one for the old english vocab. Then proceeds to call get_tokens_to_id to get the vocab mappings and posts 
+    the documents to the mongodb
+    """
     dbname = get_database()
     mod_eng_collection = dbname['mod_eng_vocab']
     old_eng_collection = dbname['old_eng_vocab']
@@ -30,6 +35,10 @@ def create_collections():
 
 
 def get_tokens_to_id(lang_vocab):
+    """
+    loops through the vocab creating a id : token document and appending them to a list
+    which is then returned
+    """
     token_mapping = lang_vocab.get_stoi()
     token_doc_list = []
 
