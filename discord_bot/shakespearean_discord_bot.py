@@ -21,9 +21,23 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    #function catches the message the user sent, 
+    #deletes the message from the discord server,
+    #then cleans and preprocesses the message converting it to a tensor
+    #feeds it into the ml model to translate
+    #Converts back to text MongoDB stored vocabulary
+    #sends the translated message back to the chat. 
+
     if message.author == client.user:
         return
-    if message.content.startswith("Shi ass bot"):
-        await message.channel.send("You a shi ass human")
+    
+    print(f"Message: {message.content}")
+    message_content = message.content
+    message_content_len = len(message_content)
+
+    await message.channel.send(type(message_content))
+    await message.channel.send(f"message length {message_content_len}")
+    # await message.delete()
+    await message.channel.send(message.content)
 
 client.run(TOKEN)
